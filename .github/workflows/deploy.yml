@@ -1,0 +1,118 @@
+name: Build → Docker Hub → Server
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_NAME: chebutap
+
+jobs:
+  build-and-push:
+    name: Build & push image
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set image metadata
+        id: meta
+        run: |
+          TAG="${GITHUB_SHA::7}"
+          IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
+          echo "IMAGE=${IMAGE}" >> "$GITHUB_ENV"
+          echo "TAG=${TAG}" >> "$GITHUB_ENV"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ env.TAG }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to server
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    env:
+      SSH_PORT: ${{ secrets.SERVER_SSH_PORT }}
+    steps:
+      - name: Checkout compose files
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            docker-compose.yml
+          sparse-checkout-cone-mode: false
+
+      - name: Ensure deploy directory
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
+          script: mkdir -p "${{ secrets.SERVER_DEPLOY_PATH }}"
+
+      - name: Copy compose to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
+          source: docker-compose.yml
+          target: ${{ secrets.SERVER_DEPLOY_PATH }}
+
+      - name: Pull image and restart
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.tag }}
+          APP_PORT: ${{ secrets.APP_PORT }}
+          DEPLOY_PATH: ${{ secrets.SERVER_DEPLOY_PATH }}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,IMAGE_TAG,APP_PORT,DEPLOY_PATH
+          script: |
+            set -euo pipefail
+            cd "${DEPLOY_PATH}"
+
+            echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+
+            export DOCKERHUB_USERNAME
+            export IMAGE_TAG
+            export APP_PORT="${APP_PORT:-8080}"
+
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker image prune -f
+
+            docker compose ps
+            curl -fsS "http://127.0.0.1:${APP_PORT}/" >/dev/null
+            echo "Deploy OK → ${DOCKERHUB_USERNAME}/chebutap:${IMAGE_TAG} on :${APP_PORT}"

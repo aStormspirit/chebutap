@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-ssr
+.git
+.github
+.agents
+*.md
+*.log
+.DS_Store
+.vscode
+.idea
+skills-lock.json
+.env
+.env.*
