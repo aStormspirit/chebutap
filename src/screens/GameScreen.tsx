@@ -4,17 +4,10 @@ import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';
 import type { FloatingText, TabId } from '../types/game';
 
-/**
- * Nav item left offsets inside Energy and navigation 3:946 (177px wide).
- * From Figma: earn 5, task 38, town 71 (−6 nested), upgrade 103, account 140.
- */
-const NAV_LEFT_PCT = [
-  (5 / 177) * 100,
-  (38 / 177) * 100,
-  (71 / 177) * 100,
-  (103 / 177) * 100,
-  (140 / 177) * 100,
-] as const;
+/** Even slots matching nav-with-slots.png wood recesses. */
+const NAV_TILE = 18.02;
+const NAV_GAP = 1.74;
+const NAV_INSET = 1.45;
 
 const TABS: { id: TabId; label: string; icon: string; iconW: number; iconH: number }[] = [
   { id: 'earn', label: 'earn', icon: '/figma/icon-earn.svg', iconW: 21, iconH: 17 },
@@ -142,24 +135,29 @@ export function GameScreen({ store, activeTab, onTabChange, onBoost, onShop }: P
       </div>
 
       <nav className="gs-nav" aria-label="Главное меню" data-node-id="3:946">
-        <img className="gs-nav__wood" src="/figma/nav-with-slots.png?v=3" alt="" draggable={false} />
-        <div className="gs-nav__items">
-          {TABS.map((tab, index) => (
-            <button
-              key={tab.id}
-              type="button"
-              className={`gs-nav__item ${activeTab === tab.id ? 'gs-nav__item--active' : ''}`}
-              style={{ left: `${NAV_LEFT_PCT[index]}%` }}
-              onClick={() => onTabChange(tab.id)}
-              aria-label={tab.label}
-              aria-current={activeTab === tab.id ? 'page' : undefined}
-            >
-              <span className="gs-nav__icon-wrap">
-                <img src={tab.icon} width={tab.iconW} height={tab.iconH} alt="" draggable={false} />
-              </span>
-              <span className="gs-nav__label">{tab.label}</span>
-            </button>
-          ))}
+        <div className="gs-nav__stage">
+          <img className="gs-nav__wood" src="/figma/nav-with-slots.png?v=4" alt="" draggable={false} />
+          <div className="gs-nav__items">
+            {TABS.map((tab, index) => {
+              const left = NAV_INSET + index * (NAV_TILE + NAV_GAP);
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={`gs-nav__item ${activeTab === tab.id ? 'gs-nav__item--active' : ''}`}
+                  style={{ left: `${left}%`, width: `${NAV_TILE}%` }}
+                  onClick={() => onTabChange(tab.id)}
+                  aria-label={tab.label}
+                  aria-current={activeTab === tab.id ? 'page' : undefined}
+                >
+                  <span className="gs-nav__icon-wrap">
+                    <img src={tab.icon} width={tab.iconW} height={tab.iconH} alt="" draggable={false} />
+                  </span>
+                  <span className="gs-nav__label">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </nav>
     </div>

@@ -59,11 +59,11 @@ ul {
 }
 
 .app-shell--game {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  max-width: none;
+  display: block;
+  max-width: 480px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .bg-doodles {
@@ -89,17 +89,14 @@ ul {
   min-height: 0;
 }
 
-/* ===== Game screen 3:945 — 172×338 absolute composition ===== */
+/* ===== Game screen 3:945 — fill Telegram viewport ===== */
 .game-screen {
   position: relative;
-  width: min(100vw, 480px, calc(100dvh * 172 / 338));
-  aspect-ratio: 172 / 338;
-  height: auto;
-  max-height: 100dvh;
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
   overflow: hidden;
   container-type: size;
-  box-shadow: 0 1px 10px rgba(57, 109, 76, 0.5);
 }
 
 .game-screen__bg {
@@ -177,9 +174,11 @@ ul {
   position: absolute;
   z-index: 2;
   left: 2.907%; /* 5/172 */
-  top: 23.077%; /* 78/338 */
+  top: 14%;
   width: 92.442%; /* 159/172 */
-  height: 55.621%; /* 188/338 */
+  /* leave room for nav wood (~22% of width) + labels */
+  bottom: calc(24cqw + var(--safe-bottom));
+  height: auto;
 }
 
 .boost-badge {
@@ -266,8 +265,9 @@ ul {
   flex-direction: column;
   align-items: center;
   width: 20.126%; /* 32/159 */
-  top: 85.106%; /* 160/188 */
-  height: 15.426%; /* 29/188 */
+  bottom: 2%;
+  top: auto;
+  height: auto;
 }
 
 .gs-side--boost {
@@ -316,9 +316,9 @@ ul {
 }
 
 .gs-side__label {
-  margin-top: 1px;
+  margin-top: 2px;
   font-family: Arimo, Nunito, sans-serif;
-  font-size: 4.651cqw; /* 8/172 of game-screen */
+  font-size: 4.651cqw; /* 8/172 */
   font-weight: 700;
   color: #fff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
@@ -329,30 +329,28 @@ ul {
   transform: translateY(2px);
 }
 
-/* Nav 3:946 — overhang left −5, width 177, height 52 @ y=286 */
+/* Nav pinned to bottom — wood keeps intrinsic aspect (no stretch) */
 .gs-nav {
   position: absolute;
   z-index: 4;
-  left: -2.907%; /* −5/172 */
-  width: 102.907%; /* 177/172 */
-  top: 84.615%; /* 286/338 */
-  height: 15.385%; /* 52/338 */
+  left: 0;
+  right: 0;
+  bottom: 0;
   padding-bottom: var(--safe-bottom);
 }
 
+.gs-nav__stage {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+}
+
 .gs-nav__wood {
-  position: absolute;
-  left: 2.825%; /* 5/177 — aligns with Navigation shadow */
-  right: 0;
-  top: 10%;
-  bottom: 0;
-  width: 97.175%; /* 172/177 */
-  height: auto;
-  max-height: none;
-  object-fit: fill;
-  object-position: center bottom;
   display: block;
+  width: 100%;
+  height: auto;
   pointer-events: none;
+  user-select: none;
 }
 
 .gs-nav__items {
@@ -363,25 +361,24 @@ ul {
 
 .gs-nav__item {
   position: absolute;
-  top: 25%; /* 13/52 */
-  width: 18.079%; /* 32/177 */
-  height: 55.769%; /* 29/52 */
+  top: 12%;
+  width: 18.02%;
+  height: 76%;
   pointer-events: auto;
-  overflow: visible;
+  overflow: hidden;
   color: #fff;
   text-shadow:
     0 1px 0 rgba(60, 30, 5, 0.75),
     0 0 3px rgba(0, 0, 0, 0.35);
 }
 
-/* Icons/labels only — wood slots already in nav-with-slots.png */
 .gs-nav__icon-wrap {
   position: absolute;
   left: 50%;
-  top: 4%;
+  top: 36%;
   width: 70%;
-  height: 55%;
-  transform: translateX(-50%);
+  height: 52%;
+  transform: translate(-50%, -50%);
   display: grid;
   place-items: center;
 }
@@ -395,15 +392,13 @@ ul {
 
 .gs-nav__label {
   position: absolute;
-  left: 50%;
-  top: 58%;
-  transform: translateX(-50%);
-  width: 140%;
+  left: 0;
+  right: 0;
+  bottom: 8%;
   font-family: Arimo, Nunito, sans-serif;
-  /* 6/172 of .game-screen — do NOT nest container-type on items */
-  font-size: 3.488cqw;
+  font-size: 3.488cqw; /* 6/172 */
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1;
   text-align: center;
   white-space: nowrap;
   pointer-events: none;
