@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { BUILDINGS, STORAGE_KEY, TASKS, UPGRADES } from '../data/content';
 import { upgradeCost } from '../lib/format';
 import type { GameState } from '../types/game';
@@ -86,17 +86,39 @@ function applyOfflineProgress(state: GameState): GameState {
 
 export function useGameStore() {
   const [state, setState] = useState<GameState>(() => applyOfflineProgress(loadState()));
-  const saveTimer = useRef<number | null>(null);
+  const committedState = useRef(state);
+
+  useLayoutEffect(() => {
+    committedState.current = state;
+  }, [state]);
 
   useEffect(() => {
-    if (saveTimer.current) window.clearTimeout(saveTimer.current);
-    saveTimer.current = window.setTimeout(() => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }, 250);
-    return () => {
-      if (saveTimer.current) window.clearTimeout(saveTimer.current);
+    let savedState: GameState | null = null;
+    const flushSave = () => {
+      const snapshot = committedState.current;
+      if (snapshot === savedState) return;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+        savedState = snapshot;
+      } catch {
+        // Keep the snapshot pending and retry if storage becomes available again.
+      }
     };
-  }, [state]);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') flushSave();
+    };
+
+    // A fixed interval cannot be postponed by continuous taps or the game tick.
+    const id = window.setInterval(flushSave, 250);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', flushSave);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', flushSave);
+      flushSave();
+    };
+  }, []);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -268,7 +290,11 @@ export function useGameStore() {
   }, []);
 
   const resetProgress = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Reset in memory even when storage is unavailable; saving will retry.
+    }
     setState(createInitialState());
   }, []);
 

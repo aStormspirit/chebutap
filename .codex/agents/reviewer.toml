@@ -1,6 +1,6 @@
 name = "reviewer"
 description = "Review implementation quality"
-model = "gpt-6.1-sol"
+model = "gpt-6-astra"
 model_reasoning_effort = "high"
 developer_instructions = """
 Review implementation against approved plan.
