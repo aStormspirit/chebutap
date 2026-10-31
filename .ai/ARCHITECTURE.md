@@ -119,3 +119,11 @@ multi-agent включён, `max_concurrent_threads_per_session = 4`.
 Конфигурация не переключает модель уже идущего чата; доступность моделей зависит от аккаунта,
 а применение проектной конфигурации — от загрузки и доверия проекту в Codex.
 Источник формата: https://learn.chatgpt.com/docs/agent-configuration/subagents.
+
+## TON Connect (2026-11-01)
+
+- `src/main.tsx` монтирует `TonConnectUIProvider` выше App, поэтому переключение вкладок не пересоздаёт сессию.
+- `src/components/WalletConnect.tsx` использует SDK hooks для восстановления, подключённого адреса, модалки выбора, ошибок и отключения. Игровой сейв не хранит адрес/ключи; сессию сохраняет официальный `@tonconnect/ui-react`.
+- `deploy/nginx.conf` отвечает на `/tonconnect-manifest.json` JSON с абсолютными HTTPS URL текущего `$host`, без auth и с CORS `*`. TLS завершается во внешнем HTTPS ingress.
+- Vite dev/preview предоставляют manifest middleware; для статического хостинга сборка с `VITE_APP_URL=https://публичный-домен` создаёт файл manifest в dist. Docker/Nginx не требует этой переменной. Без неё dist предназначен для штатного Nginx; произвольный static hosting должен задавать URL.
+- TON Connect подключает клиентскую сессию. Серверного доказательства владения адресом (`ton_proof`), транзакций и связи адреса с серверным аккаунтом нет.

@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import WebApp from '@twa-dev/sdk';
+import { WalletConnect } from '../components/WalletConnect';
 import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';
 import type { FloatingText, TabId } from '../types/game';
@@ -82,6 +83,8 @@ export function GameScreen({ store, activeTab, onTabChange, onBoost, onShop }: P
           </span>
         </div>
       </header>
+
+      <WalletConnect />
 
       <div className="gs-play" data-node-id="3:994">
         {state.boostMultiplier > 1 && boostLeft > 0 && (
