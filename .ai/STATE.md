@@ -10,7 +10,7 @@
 - Ссылку подключения, bridge и переход `web_app_open_tg_link` внутри Telegram формирует официальный SDK. Адрес, восстановление и отключение сохранены.
 - Изменены: `src/components/WalletConnect.tsx`, `.ai/{CURRENT_TASK,STATE,ARCHITECTURE,CHANGELOG}.md`.
 - Проверки: lint/build/diff-check PASS; прежние 2 предупреждения Date.now и размер bundle >500kB. Реальный Telegram/подтверждение в Walt не проверены.
-- Следующая точка входа: проверка исправленной кнопки в Telegram на опубликованной версии. Текущее исправление ещё не опубликовано.
+- Следующая точка входа: проверка исправленной кнопки в Telegram на опубликованной версии. Исправление опубликовано коммитом `8fb7529`.
 
 ## Предыдущая задача: 2026-11-01 — TON Connect
 
@@ -134,3 +134,7 @@ Browser QA на отдельном origin с искусственным прог
 По явному запросу пользователя TON Connect опубликован: коммит `d3d5622` отправлен в origin/main. GitHub Actions https://github.com/aStormspirit/chebutap/actions/runs/41247486380 завершён успешно: Build & push image и Deploy to server PASS, включая pull/restart и серверный HTTP health check. Публичный HTTPS manifest и подключение пользовательским кошельком отдельно не проверялись. Код после проверок не менялся; финальная запись документации оформляется с [skip ci], чтобы не повторять deployment.
 
 Reviewer: PASS. По установленному SDK подтверждены TON Connect запрос и открытие через web_app_open_tg_link; проверка на устройстве остаётся необходимой.
+
+## Исправление Walt опубликовано 2026-11-01
+
+Коммит `8fb7529` отправлен в origin/main. GitHub Actions https://github.com/aStormspirit/chebutap/actions/runs/41302754851 — SUCCESS: Docker-образ собран, Deploy to server завершён, pull/restart и HTTP health check успешны. Осталось проверить на устройстве открытие Walt и подтверждение TON Connect. Финальная запись документации: [skip ci].

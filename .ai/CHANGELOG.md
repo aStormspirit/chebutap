@@ -107,3 +107,7 @@ Compose-сервис подключён к внешней сети `dating-bot_d
 ## Результат публикации 2026-11-01
 
 По явному запросу пользователя TON Connect опубликован: коммит `d3d5622` отправлен в origin/main. GitHub Actions https://github.com/aStormspirit/chebutap/actions/runs/41247486380 завершён успешно: Build & push image и Deploy to server PASS, включая pull/restart и серверный HTTP health check. Публичный HTTPS manifest и подключение пользовательским кошельком отдельно не проверялись. Код после проверок не менялся; финальная запись документации оформляется с [skip ci], чтобы не повторять deployment.
+
+## Исправление Walt опубликовано 2026-11-01
+
+Коммит `8fb7529` отправлен в origin/main. GitHub Actions https://github.com/aStormspirit/chebutap/actions/runs/41302754851 — SUCCESS: Docker-образ собран, Deploy to server завершён, pull/restart и HTTP health check успешны. Осталось проверить на устройстве открытие Walt и подтверждение TON Connect. Финальная запись документации: [skip ci].
