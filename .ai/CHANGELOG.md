@@ -119,3 +119,7 @@ Compose-сервис подключён к внешней сети `dating-bot_d
 Коммит `8fb7529` отправлен в origin/main. GitHub Actions https://github.com/aStormspirit/chebutap/actions/runs/41302754851 — SUCCESS: Docker-образ собран, Deploy to server завершён, pull/restart и HTTP health check успешны. Осталось проверить на устройстве открытие Walt и подтверждение TON Connect. Финальная запись документации: [skip ci].
 
 Проверки нативного маршрута: lint/build/diff-check PASS, reviewer PASS. Временный harness на компоненте/helper проверил передачу точной SDK-ссылки в openTelegramLink, отсутствие window.open fallback, повтор/abort, отказ без фиктивного адреса, подтверждённый адрес и браузерный выбор. Реальное устройство не проверено. Публикация выполняется в рамках ранее запрошенного обновления сервера.
+
+## Публикация нативного маршрута 2026-11-01
+
+Коммит `3ded589` опубликован в origin/main. GitHub Actions https://github.com/aStormspirit/chebutap/actions/runs/41303507473 — SUCCESS: образ собран, приложение на сервере перезапущено, HTTP health check PASS. Реальное подтверждение в Walt требует проверки пользователем; автоматические проверки подтверждают маршрут Telegram API, а не работу реального устройства.
