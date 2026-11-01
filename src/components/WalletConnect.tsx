@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useIsConnectionRestored, useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
+import WebApp from '@twa-dev/sdk';
+
+// Walt (formerly Wallet) is distinct from the SDK's Telegram/sendgrams wallet.
+const WALT_APP_NAME = 'telegram-wallet';
 
 export function WalletConnect() {
   const [tonConnectUI] = useTonConnectUI();
@@ -20,6 +24,8 @@ export function WalletConnect() {
     try {
       if (address) {
         setDetailsOpen(!detailsOpen);
+      } else if (WebApp.initData) {
+        await tonConnectUI.openSingleWalletModal(WALT_APP_NAME);
       } else {
         await tonConnectUI.openModal();
       }

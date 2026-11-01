@@ -127,3 +127,5 @@ multi-agent включён, `max_concurrent_threads_per_session = 4`.
 - `deploy/nginx.conf` отвечает на `/tonconnect-manifest.json` JSON с абсолютными HTTPS URL текущего `$host`, без auth и с CORS `*`. TLS завершается во внешнем HTTPS ingress.
 - Vite dev/preview предоставляют manifest middleware; для статического хостинга сборка с `VITE_APP_URL=https://публичный-домен` создаёт файл manifest в dist. Docker/Nginx не требует этой переменной. Без неё dist предназначен для штатного Nginx; произвольный static hosting должен задавать URL.
 - TON Connect подключает клиентскую сессию. Серверного доказательства владения адресом (`ton_proof`), транзакций и связи адреса с серверным аккаунтом нет.
+
+- В Telegram подключение целенаправленно открывает Walt через `openSingleWalletModal('telegram-wallet')`: это другой кошелёк, чем `telegram` (sendgrams). В браузере сохраняется общая модалка выбора. Ссылку и открытие внутри Telegram выполняет SDK.
