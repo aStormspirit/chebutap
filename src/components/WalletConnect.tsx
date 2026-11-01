@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useIsConnectionRestored, useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
 import WebApp from '@twa-dev/sdk';
-
-// Walt (formerly Wallet) is distinct from the SDK's Telegram/sendgrams wallet.
-const WALT_APP_NAME = 'telegram-wallet';
+import { connectTelegramWallet } from '../lib/connectTelegramWallet';
 
 export function WalletConnect() {
   const [tonConnectUI] = useTonConnectUI();
@@ -12,11 +10,17 @@ export function WalletConnect() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const pendingConnection = useRef<AbortController | null>(null);
 
-  useEffect(() => tonConnectUI.onStatusChange(() => {
+  useEffect(() => tonConnectUI.onStatusChange((wallet) => {
+    if (wallet) pendingConnection.current = null;
     setError('');
     setDetailsOpen(false);
   }, () => setError('Не удалось подключить кошелёк. Попробуйте ещё раз.')), [tonConnectUI]);
+
+  useEffect(() => () => {
+    if (!tonConnectUI.connector.connected) pendingConnection.current?.abort();
+  }, [tonConnectUI]);
 
   const handleClick = async () => {
     setError('');
@@ -24,12 +28,19 @@ export function WalletConnect() {
     try {
       if (address) {
         setDetailsOpen(!detailsOpen);
-      } else if (WebApp.initData) {
-        await tonConnectUI.openSingleWalletModal(WALT_APP_NAME);
+      } else if (WebApp.initData || WebApp.platform !== 'unknown') {
+        // TON UI's environment heuristics can choose an external browser here.
+        // Use the initialized Telegram API directly; never fall back outside Telegram.
+        if (!WebApp.isVersionAtLeast('6.1')) throw new Error('Telegram needs an update');
+        pendingConnection.current?.abort();
+        const attempt = new AbortController();
+        pendingConnection.current = attempt;
+        await connectTelegramWallet(tonConnectUI.connector, (link) => WebApp.openTelegramLink(link), attempt.signal);
       } else {
         await tonConnectUI.openModal();
       }
     } catch {
+      if (!tonConnectUI.connector.connected) pendingConnection.current?.abort();
       setError(address ? 'Не удалось отключить кошелёк. Попробуйте ещё раз.' : 'Не удалось открыть подключение. Попробуйте ещё раз.');
     } finally {
       setBusy(false);

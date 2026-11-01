@@ -129,3 +129,5 @@ multi-agent включён, `max_concurrent_threads_per_session = 4`.
 - TON Connect подключает клиентскую сессию. Серверного доказательства владения адресом (`ton_proof`), транзакций и связи адреса с серверным аккаунтом нет.
 
 - В Telegram подключение целенаправленно открывает Walt через `openSingleWalletModal('telegram-wallet')`: это другой кошелёк, чем `telegram` (sendgrams). В браузере сохраняется общая модалка выбора. Ссылку и открытие внутри Telegram выполняет SDK.
+
+- Telegram-маршрут исправлен после проверки пользователем: вместо модалки `openSingleWalletModal` используется `connectTelegramWallet`. Официальный connector формирует запрос по remote descriptor из getWallets; полученная HTTPS t.me ссылка открывается непосредственно `WebApp.openTelegramLink`. Внешние fallback ветки TON UI в этом сценарии не используются. Браузер сохраняет общую модалку.
