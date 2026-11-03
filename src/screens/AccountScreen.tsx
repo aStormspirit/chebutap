@@ -1,4 +1,4 @@
-import WebApp from '@twa-dev/sdk';
+import { WebApp } from '../lib/telegram';
 import { CoinIcon, DiamondIcon } from '../components/icons';
 import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useIsConnectionRestored, useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
-import WebApp from '@twa-dev/sdk';
+import { WebApp } from '../lib/telegram';
 import { connectTelegramWallet } from '../lib/connectTelegramWallet';
 
 export function WalletConnect() {

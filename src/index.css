@@ -494,6 +494,7 @@ ul {
 
 .gs-nav__item {
   position: absolute;
+  top: 14.474%; /* (38 − 27) / 2 / 38 */
   width: 15.698%; /* 27/172 */
   height: 71.053%; /* 27/38 */
   pointer-events: auto;
@@ -516,8 +517,10 @@ ul {
 
 .gs-nav__icon-wrap {
   position: absolute;
-  left: 18.519%; /* 5/27 */
+  left: 0;
+  right: 0;
   top: 7.407%; /* 2/27 */
+  height: 10.465cqw; /* 18/172: shared icon row */
   display: grid;
   place-items: center;
 }
@@ -528,17 +531,8 @@ ul {
   display: block;
 }
 
-.gs-nav__item--earn .gs-nav__icon-wrap {
-  left: 22.222%; /* 6/27 */
-}
-
 .gs-nav__item--earn .gs-nav__icon-wrap img {
   width: 8.14cqw; /* 14/172 */
-}
-
-.gs-nav__item--tasks .gs-nav__icon-wrap,
-.gs-nav__item--town .gs-nav__icon-wrap {
-  top: 3.704%; /* 1/27 */
 }
 
 .gs-nav__label {

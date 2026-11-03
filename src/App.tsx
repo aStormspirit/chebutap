@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import WebApp from '@twa-dev/sdk';
+import { WebApp } from './lib/telegram';
 import { BottomNav } from './components/BottomNav';
 import { Modals } from './components/Modals';
 import { AccountScreen } from './screens/AccountScreen';

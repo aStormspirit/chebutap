@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import WebApp from '@twa-dev/sdk';
+import { WebApp } from '../lib/telegram';
 import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';
 import type { FloatingText } from '../types/game';

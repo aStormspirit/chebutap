@@ -72,7 +72,7 @@ content.ts + types/game.ts + lib/format.ts → store и экраны
 
 ## UI и внешние зависимости
 
-`GameScreen` опирается на Figma Game `3:945`, исходный размер 172×338; навигация `3:946`.
+`GameScreen` опирается на Figma Game `3:945`, исходный размер 172×338; навигация `3:946` (файл Figma `IcM1HfxTpyggNJadCWdJ5n`); плитки меню намеренно выровнены равномерно, а не по неровным координатам макета.
 В CSS используются проценты, container units и ограничение оболочки 480px.
 GameScreen использует отдельные `public/figma/game-*` ассеты: 8 SVG и 2 деревянных PNG.
 Нижняя панель — основа 172×38 и пять отдельных текстурированных кнопок по координатам Figma.
@@ -83,6 +83,7 @@ GameScreen использует отдельные `public/figma/game-*` асс�
 
 Telegram SDK: ready/expand/цвета в `App`, haptic при тапе, данные профиля и share-link в Account.
 `index.html` загружает Telegram WebApp script и Google Fonts (Arimo/Nunito).
+Telegram WebApp импортируется только из `src/lib/telegram.ts`: прямой default-импорт `@twa-dev/sdk` в сборке Vite/Rolldown возвращает `{ default: WebApp }`.
 Серверной проверки Telegram `initData` нет; `initDataUnsafe` используется для отображения профиля.
 
 ## Доставка

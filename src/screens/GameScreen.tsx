@@ -1,17 +1,23 @@
 import { useCallback, useRef, useState } from 'react';
-import WebApp from '@twa-dev/sdk';
+import { WebApp } from '../lib/telegram';
 import { WalletConnect } from '../components/WalletConnect';
 import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';
 import type { FloatingText, TabId } from '../types/game';
 
-/** Face positions on the 172×38 Figma navigation base. */
-const TABS: { id: TabId; label: string; icon: string; iconSize: number; x: number; y: number }[] = [
-  { id: 'earn', label: 'earn', icon: '/figma/game-coin.svg', iconSize: 14, x: 3, y: 5.5 },
-  { id: 'tasks', label: 'task', icon: '/figma/game-clipboard.svg', iconSize: 18, x: 36, y: 4.5 },
-  { id: 'town', label: 'town', icon: '/figma/game-globe.svg', iconSize: 18, x: 69, y: 5.5 },
-  { id: 'upgrades', label: 'upgrade', icon: '/figma/game-arrow.svg', iconSize: 18, x: 101, y: 5.5 },
-  { id: 'account', label: 'account', icon: '/figma/game-user.svg', iconSize: 18, x: 137, y: 5.5 },
+/**
+ * Figma 3:946 places the 27×27 faces unevenly (x 3–137); here they share one row:
+ * 4.5 edge margin + 5 × 27 + 4 × 7 gap = 172.
+ */
+const NAV_TILE = 27;
+const NAV_GAP = 7;
+const NAV_EDGE = (172 - 5 * NAV_TILE - 4 * NAV_GAP) / 2;
+const TABS: { id: TabId; label: string; icon: string; iconSize: number }[] = [
+  { id: 'earn', label: 'earn', icon: '/figma/game-coin.svg', iconSize: 14 },
+  { id: 'tasks', label: 'task', icon: '/figma/game-clipboard.svg', iconSize: 18 },
+  { id: 'town', label: 'town', icon: '/figma/game-globe.svg', iconSize: 18 },
+  { id: 'upgrades', label: 'upgrade', icon: '/figma/game-arrow.svg', iconSize: 18 },
+  { id: 'account', label: 'account', icon: '/figma/game-user.svg', iconSize: 18 },
 ];
 
 type Props = {
@@ -137,13 +143,13 @@ export function GameScreen({ store, activeTab, onTabChange, onBoost, onShop }: P
         <div className="gs-nav__stage">
           <img className="gs-nav__wood" src="/figma/game-nav-wood.png" alt="" draggable={false} />
           <div className="gs-nav__items">
-            {TABS.map((tab) => {
+            {TABS.map((tab, index) => {
               return (
                 <button
                   key={tab.id}
                   type="button"
                   className={`gs-nav__item gs-nav__item--${tab.id} ${activeTab === tab.id ? 'gs-nav__item--active' : ''}`}
-                  style={{ left: `${(tab.x / 172) * 100}%`, top: `${(tab.y / 38) * 100}%` }}
+                  style={{ left: `${((NAV_EDGE + index * (NAV_TILE + NAV_GAP)) / 172) * 100}%` }}
                   onClick={() => onTabChange(tab.id)}
                   aria-label={tab.label}
                   aria-current={activeTab === tab.id ? 'page' : undefined}
