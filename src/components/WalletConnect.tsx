@@ -59,8 +59,8 @@ export function WalletConnect() {
         aria-label={address ? `Кошелёк ${address} подключён. Показать подробности` : 'Подключить DeFi Wallet'}
       >
         <span className="gs-wallet__icon" aria-hidden="true">◈</span>
-        <span>{!restored ? 'Восстановление…' : address ? `${address.slice(0, 6)}…${address.slice(-4)}` : 'Подключить DeFi Wallet'}</span>
-        <span className="gs-wallet__arrow" aria-hidden="true">{address ? '⌄' : '↗'}</span>
+        <span className="gs-wallet__label">{!restored ? 'Восстановление…' : address ? `${address.slice(0, 6)}…${address.slice(-4)}` : 'Подключить DeFi Wallet'}</span>
+        {address && <span className="gs-wallet__arrow" aria-hidden="true">⌄</span>}
       </button>
       {address && detailsOpen && (
         <div className="gs-wallet-details">

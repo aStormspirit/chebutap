@@ -35,6 +35,7 @@ export default function App() {
           onTabChange={setTab}
           onBoost={() => setModal('boost')}
           onShop={() => setModal('shop')}
+          onSettings={() => setModal('settings')}
         />
         <Modals modal={modal} store={store} onClose={() => setModal(null)} />
       </div>
