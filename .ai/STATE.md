@@ -9,7 +9,8 @@
 - Изменены: `src/lib/telegram.ts` (новый), `src/App.tsx`, `src/components/WalletConnect.tsx`, `src/screens/{AccountScreen,EarnScreen,GameScreen}.tsx`, `.claude/launch.json` (dev-сервер для preview), `.ai/{CURRENT_TASK,STATE,ARCHITECTURE,CHANGELOG}.md`.
 - Проверки: lint (2 прежних предупреждения Date.now), build PASS. В браузере с эмуляцией Telegram (Android 8.0) кнопка отправляет `web_app_open_tg_link` на Walt без ошибки; без Telegram открывается модалка TON Connect.
 - Нижнее меню: плитки выстроены равномерно (общие поля/промежутки/top, иконки по центру) — `src/screens/GameScreen.tsx`, `src/index.css`. Проверено в браузере на 390×844 и 320×568 замером геометрии.
-- Осталось: публикация, проверка на устройстве подтверждения в Walt и меню в реальном Telegram.
+- Опубликовано: коммит `54719a1` в origin/main; GitHub Actions https://github.com/aStormspirit/chebutap/actions/runs/41611965997 — SUCCESS (Build & push image, Deploy to server).
+- Осталось: проверка на устройстве подтверждения в Walt и меню в реальном Telegram.
 - Следующая точка входа: кнопка кошелька и меню после деплоя.
 
 ## Предыдущая задача: нативное открытие Walt (2026-11-01)
