@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { WebApp } from './lib/telegram';
-import { BottomNav } from './components/BottomNav';
+import { GameNav } from './components/GameNav';
 import { Modals } from './components/Modals';
 import { AccountScreen } from './screens/AccountScreen';
 import { GameScreen } from './screens/GameScreen';
@@ -43,25 +43,23 @@ export default function App() {
   }
 
   return (
-    <div className="app-shell">
-      <div
-        className="bg-doodles"
-        aria-hidden
-        style={{ backgroundImage: 'url(/figma/bg.png)' }}
-      />
-      <main className="app-main app-main--panel">
-        {tab === 'tasks' && <TasksScreen store={store} />}
-        {tab === 'town' && <TownScreen store={store} />}
-        {tab === 'upgrades' && <UpgradesScreen store={store} />}
-        {tab === 'account' && (
-          <AccountScreen
-            store={store}
-            onShop={() => setModal('shop')}
-            onSettings={() => setModal('settings')}
-          />
-        )}
-      </main>
-      <BottomNav active={tab} onChange={setTab} />
+    <div className="app-shell app-shell--game">
+      <div className="game-screen game-screen--panel">
+        <div className="game-screen__bg" aria-hidden />
+        <main className="gs-panel">
+          {tab === 'tasks' && <TasksScreen store={store} />}
+          {tab === 'town' && <TownScreen store={store} />}
+          {tab === 'upgrades' && <UpgradesScreen store={store} />}
+          {tab === 'account' && (
+            <AccountScreen
+              store={store}
+              onShop={() => setModal('shop')}
+              onSettings={() => setModal('settings')}
+            />
+          )}
+        </main>
+        <GameNav active={tab} onChange={setTab} />
+      </div>
       <Modals modal={modal} store={store} onClose={() => setModal(null)} />
     </div>
   );

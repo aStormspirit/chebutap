@@ -1,17 +1,10 @@
 import { useCallback, useRef, useState } from 'react';
 import { WebApp } from '../lib/telegram';
+import { GameNav } from '../components/GameNav';
 import { WalletConnect } from '../components/WalletConnect';
 import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';
 import type { FloatingText, TabId } from '../types/game';
-
-const TABS: { id: TabId; label: string; icon: string }[] = [
-  { id: 'earn', label: 'Earn', icon: '/figma/game-coin.svg' },
-  { id: 'tasks', label: 'Tasks', icon: '/figma/game-clipboard.svg' },
-  { id: 'town', label: 'Town', icon: '/figma/game-globe.svg' },
-  { id: 'upgrades', label: 'Upgrade', icon: '/figma/game-arrow.svg' },
-  { id: 'account', label: 'Account', icon: '/figma/game-user.svg' },
-];
 
 type Props = {
   store: GameStore;
@@ -131,20 +124,7 @@ export function GameScreen({ store, activeTab, onTabChange, onBoost, onShop, onS
         </span>
       </div>
 
-      <nav className="gs-nav" aria-label="Главное меню">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            className={`gs-tile gs-nav__item ${activeTab === tab.id ? 'gs-nav__item--active' : ''}`}
-            onClick={() => onTabChange(tab.id)}
-            aria-current={activeTab === tab.id ? 'page' : undefined}
-          >
-            <img src={tab.icon} width={24} height={24} alt="" draggable={false} />
-            <span className="gs-tile__label">{tab.label}</span>
-          </button>
-        ))}
-      </nav>
+      <GameNav active={activeTab} onChange={onTabChange} />
     </div>
   );
 }
