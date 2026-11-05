@@ -83,7 +83,6 @@
 The root agent is a low-cost dispatcher.
 
 ## Routing
-
 - Simple questions: answer directly.
 - File searches and logs: delegate to explorer.
 - Complex planning: delegate to planner.
@@ -92,18 +91,40 @@ The root agent is a low-cost dispatcher.
 - Final summaries: delegate to reporter when useful.
 
 ## Workflow
-
 1. Explorer collects relevant context.
-2. Planner creates an implementation plan.
-3. Ask user to approve the plan.
-4. Developer implements approved tasks.
-5. Run automated tests.
-6. Reviewer evaluates the changes.
-7. On FAIL, return findings to developer.
-8. Reporter summarizes verified results.
+2. Planner creates an implementation plan with risks, dependencies and acceptance criteria.
+3. Full autopilot (user decision 2026-11-05, LoopOS install): plans are auto-approved; agents decide on their own, and after reviewer PASS they merge, push and deploy automatically, roll back on failed deploy/smoke, and list everything in the acceptance report. The user only accepts the finished result. Ask earlier only for hard stops: irreversible production data loss, real money, missing secrets, mass messages to real users; or with `/task --careful`. Never force-push.
+4. Developer implements the approved tasks.
+5. Run relevant automated tests and required project checks; record actual results and blockers.
+6. Reviewer evaluates the changes and returns PASS or FAIL.
+7. On FAIL, return actionable findings to developer and review the fixes again.
+8. Reporter summarizes verified results when useful; the root agent owns the final response.
+
+Use subagents for delegated work, not new user-facing chats. Give each developer an explicit file scope; do not run overlapping edits concurrently. Read-only roles must not edit files. Each agent must follow applicable AGENTS.md and .ai context, preserve unrelated work and protect secrets. Parent permissions and runtime concurrency limits still apply. File instructions do not create a separate read-only sandbox or change the running chat's model.
 
 Use only the stages relevant to the task. An explicit implementation request with a supplied plan
 counts as approval of that plan; do not ask for the same approval again.
 For documentation-only changes, validate the affected files rather than running unrelated tests.
 Pass each agent a bounded task and only the context it needs. Do not delegate the same work twice.
 If a configured role or model is unavailable, report the limitation; do not silently substitute a model.
+
+# Где что лежит
+
+Корень проекта — один Git-репозиторий `chebutap` (`origin` → `github.com/aStormspirit/chebutap`, основная ветка `main`). Клиентская Telegram Mini App без сервера: React 19 + TypeScript + Vite.
+
+```
+src/                 App.tsx, screens/, components/, store/gameStore.ts, data/content.ts (баланс), types/game.ts, lib/ (telegram.ts, кошелёк)
+public/              ассеты (в т.ч. public/figma/)
+index.html, vite.config.ts, tsconfig*.json   сборка
+Dockerfile, deploy/nginx.conf, docker-compose.yml   образ Nginx и запуск на сервере
+.github/workflows/deploy.yml   push в main → Docker Hub → сервер
+.ai/                 контекст проекта и файлы задач LoopOS (.ai/tasks/)
+.claude/             агенты, скилл /task, settings.json, launch.json (dev-сервер :5173)
+.codex/, .agents/    роли Codex и скилл Figma (figma-design-to-code)
+```
+
+Подробности — `.ai/ARCHITECTURE.md`; проверки — `npm run lint`, `npm run build`.
+
+# LoopOS в Claude Code
+
+Полный цикл задачи запускается командой `/task <описание>` (`.claude/skills/task/SKILL.md`). Роли — `.claude/agents/{explorer,planner,developer,reviewer,reporter}.md` (одноимённые роли Codex — в `.codex/agents/`). Режим по умолчанию — полный автопилот: план утверждается автоматически, решения агенты принимают сами; после PASS reviewer ветка сливается, пушится и выкатывается по карте деплоя, при падении деплоя или smoke — автоматический revert. Пользователь только принимает готовый результат («Принять» / «Откатить» / «Доработать»). Спрашивают раньше только при жёстких стопах: необратимая потеря прод-данных, реальные деньги, отсутствующие секреты, массовые сообщения пользователям. `/task --careful` — с утверждением плана, `/task --no-deploy` — без push. Force-push запрещён всегда. Файлы задач и история переходов — `.ai/tasks/`, метрики цикла — `.ai/tasks/METRICS.md`. Слияние, push и деплой цикл выполняет сам (шаг 6 скилла). Вне `/task` действует прежнее правило: не коммитить и не пушить без просьбы пользователя.

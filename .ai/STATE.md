@@ -1,9 +1,18 @@
 # Текущее состояние
 
-Обновлено: 2026-11-03. База текущей задачи: `83c99f9` на ветке `main`.
+Обновлено: 2026-11-05. База текущей задачи: `ff6ad10` на ветке `main`.
 Это снимок состояния, а не гарантия актуальности: при следующей задаче проверь Git повторно.
 
-## Последняя задача: редизайн Game Screen (2026-11-03)
+## Последняя задача: установка LoopOS (2026-11-05)
+
+- Реализовано: цикл `/task` для Claude Code — `.claude/agents/{explorer,planner,developer,reviewer,reporter}.md`, `.claude/skills/task/SKILL.md` (карта деплоя: push `main` → `deploy.yml`), `.claude/settings.json`, `.ai/tasks/{_TEMPLATE,METRICS}.md`.
+- Изменены: `AGENTS.md` (обновлены AI Orchestration Rules, добавлены «Где что лежит» и «LoopOS в Claude Code»), `.gitignore` (`.worktrees/`), `.ai/{CONVENTIONS,ARCHITECTURE,STATE,CURRENT_TASK,CHANGELOG}.md`. Код приложения не менялся; ничего не закоммичено и не запушено.
+- Проверено: remote `aStormspirit/chebutap`, ветка `main`, последние 3 запуска workflow — success (`gh run list`).
+- Не проверено: публичный HTTPS URL продакшена (внешний smoke недоступен), работа `/task` на реальной задаче, наличие GitHub secrets.
+- Известные проблемы: `.claude/agents/developer.md` скопирован как есть и упоминает `landing`/`mobile-app` (неприменимо здесь, безвредно).
+- Следующая точка входа: пробная задача через `/task --careful` или `/task --no-deploy`.
+
+## Предыдущая задача: редизайн Game Screen (2026-11-03)
 
 - Реализовано: новый вид экрана earn по референсу пользователя — стеклянные плашки (алмазы, DeFi-кошелёк, баланс), кнопка настроек, деревянные плитки Boost/Shop и меню, полоса энергии; меню прижато к низу без зазора.
 - Изменены: `src/screens/GameScreen.tsx`, `src/index.css` (секция Game Screen), `src/App.tsx` (onSettings), `src/components/WalletConnect.tsx` (класс подписи, стрелка только при подключении), новые `public/figma/game-{gem,gear}.svg`, `.ai/*`.

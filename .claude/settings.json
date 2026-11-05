@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)",
+      "Bash(git revert:*)",
+      "Bash(git push origin loop/*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh run watch:*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git push --force-with-lease:*)",
+      "Bash(git push --delete:*)",
+      "Bash(git push origin --delete:*)",
+      "Bash(git push origin +*)"    ]
+  }
+}

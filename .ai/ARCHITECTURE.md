@@ -121,6 +121,11 @@ multi-agent включён, `max_concurrent_threads_per_session = 4`.
 а применение проектной конфигурации — от загрузки и доверия проекту в Codex.
 Источник формата: https://learn.chatgpt.com/docs/agent-configuration/subagents.
 
+Claude Code (LoopOS, 2026-11-05): роли — `.claude/agents/*.md` (explorer/reporter — haiku,
+developer — sonnet, planner/reviewer — opus), цикл — скилл `.claude/skills/task/SKILL.md` с картой деплоя,
+разрешения — `.claude/settings.json` (deny на force-push и удаление веток remote). Задачи — `.ai/tasks/`,
+worktree — `.worktrees/` (не версионируется). Правила — `.ai/CONVENTIONS.md`, раздел LoopOS.
+
 ## TON Connect (2026-11-01)
 
 - `src/main.tsx` монтирует `TonConnectUIProvider` выше App, поэтому переключение вкладок не пересоздаёт сессию.
