@@ -3,7 +3,15 @@
 Обновлено: 2026-11-05. База текущей задачи: `ff6ad10` на ветке `main`.
 Это снимок состояния, а не гарантия актуальности: при следующей задаче проверь Git повторно.
 
-## Последняя задача: установка LoopOS (2026-11-05)
+## Последняя задача: дизайн остальных экранов (2026-11-05)
+
+- Реализовано: tasks/town/upgrades/account и модалки переведены на стиль earn; общее меню `src/components/GameNav.tsx` на всех вкладках; панельные вкладки внутри `.game-screen` с прокручиваемым `.gs-panel`.
+- Изменены: `src/App.tsx`, `src/components/GameNav.tsx` (новый), `src/screens/GameScreen.tsx`, `src/index.css` (блок в конце файла). Коммит `cc0c2aa` в локальной `main`, не запушен.
+- Проверки: lint (2 прежних предупреждения), build PASS; браузер 390×844 и 320×568 PASS; reviewer PASS.
+- Не сделано / проблемы: `BottomNav.tsx` и CSS `.bg-doodles/.app-main/.nav-item/.bottom-nav` больше не используются; иконки зданий и улучшений — эмодзи; реальный Telegram не проверен.
+- Следующая точка входа: оценка пользователем на localhost:5173, затем push `main` (деплой).
+
+## Предыдущая задача: установка LoopOS (2026-11-05)
 
 - Реализовано: цикл `/task` для Claude Code — `.claude/agents/{explorer,planner,developer,reviewer,reporter}.md`, `.claude/skills/task/SKILL.md` (карта деплоя: push `main` → `deploy.yml`), `.claude/settings.json`, `.ai/tasks/{_TEMPLATE,METRICS}.md`.
 - Изменены: `AGENTS.md` (обновлены AI Orchestration Rules, добавлены «Где что лежит» и «LoopOS в Claude Code»), `.gitignore` (`.worktrees/`), `.ai/{CONVENTIONS,ARCHITECTURE,STATE,CURRENT_TASK,CHANGELOG}.md`. Код приложения не менялся; ничего не закоммичено и не запушено.

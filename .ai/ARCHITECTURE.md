@@ -86,6 +86,13 @@ Telegram SDK: ready/expand/цвета в `App`, haptic при тапе, данн
 Telegram WebApp импортируется только из `src/lib/telegram.ts`: прямой default-импорт `@twa-dev/sdk` в сборке Vite/Rolldown возвращает `{ default: WebApp }`.
 Серверной проверки Telegram `initData` нет; `initDataUnsafe` используется для отображения профиля.
 
+## Общий каркас вкладок (2026-11-05)
+
+Все вкладки рендерятся внутри `.game-screen` с фоном `.game-screen__bg` и общим меню `GameNav` (`src/components/GameNav.tsx`).
+Earn — `GameScreen`; остальные — в прокручиваемом `main.gs-panel` (App.tsx). Старые классы `.game-card`, `.btn--*`, `.modal`
+перестилены блоком в конце `index.css`; переменные `--gs-*` продублированы на `.modal-backdrop` (модалки вне `.game-screen`).
+`BottomNav.tsx` не используется.
+
 ## Доставка
 
 `npm run build` создаёт `dist/`. Nginx слушает 80, делает SPA fallback на `index.html`,

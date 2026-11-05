@@ -4,3 +4,4 @@
 
 | id | дата | risk | попыток до PASS | first-pass | итог | вопросов пользователю |
 | --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-05-screens-design | 2026-11-05 | MEDIUM | 1 | да | READY_FOR_ACCEPTANCE | 1 |
