@@ -1,6 +1,6 @@
 ---
 id: 2026-11-05-screens-design
-status: READY_FOR_ACCEPTANCE
+status: DONE
 risk: MEDIUM
 repos: [chebutap]
 branch: loop/screens-design
@@ -57,6 +57,8 @@ OUT OF SCOPE: push/деплой; store, баланс, сейв; новые ас�
 
 ## Решения пользователя
 
+- 2026-11-06: «Принять и выкатить» после локальной проверки.
+
 ## Исполнение
 
 ### Попытка 1
@@ -70,9 +72,11 @@ OUT OF SCOPE: push/деплой; store, баланс, сейв; новые ас�
 - Ветки / worktree / коммиты: `loop/screens-design` → локальная `main` fast-forward до `cc0c2aa`; worktree удалён. Push не делался (`--no-deploy`).
 - Проверки (факт): lint (2 прежних предупреждения), build PASS, браузерная проверка PASS.
 - Не проверено: реальный Telegram WebView, модалки boost/settings визуально (только магазин).
-- Ручные шаги пользователя: проверить на http://localhost:5173; затем push в `main` для деплоя.
+- Выкачено: push `ff6ad10..3967d02` в `origin/main`; верхний коммит с `[skip ci]`, поэтому деплой запущен вручную (`workflow_dispatch`) — https://github.com/aStormspirit/chebutap/actions/runs/42186085528 SUCCESS (Build & push image, Deploy to server с серверным health check).
 
 ## LEARN
+
+- Если последний коммит пуша содержит `[skip ci]`, push не запускает деплой — нужен `gh workflow run deploy.yml --ref main`. Лучше не ставить doc-коммит с `[skip ci]` на вершину перед выпуском.
 
 - Сервер preview по `launch.json` стартует из основного checkout, а не из worktree: для проверки ветки нужен отдельный конфиг (`npm --prefix .worktrees/... run dev -- --port 5174`). Учесть в шаге проверки.
 
@@ -86,3 +90,4 @@ OUT OF SCOPE: push/деплой; store, баланс, сейв; новые ас�
 | 2026-11-05 | VERIFYING | reviewer | PASS с 1-й попытки |
 | 2026-11-05 | RELEASING | orchestrator | --no-deploy: ff-merge в локальную main, dev-сервер :5173 |
 | 2026-11-05 | READY_FOR_ACCEPTANCE | orchestrator | ждёт проверки пользователем |
+| 2026-11-06 | DONE | orchestrator | принято пользователем, push + деплой SUCCESS |

@@ -6,10 +6,10 @@
 ## Последняя задача: дизайн остальных экранов (2026-11-05)
 
 - Реализовано: tasks/town/upgrades/account и модалки переведены на стиль earn; общее меню `src/components/GameNav.tsx` на всех вкладках; панельные вкладки внутри `.game-screen` с прокручиваемым `.gs-panel`.
-- Изменены: `src/App.tsx`, `src/components/GameNav.tsx` (новый), `src/screens/GameScreen.tsx`, `src/index.css` (блок в конце файла). Коммит `cc0c2aa` в локальной `main`, не запушен.
+- Изменены: `src/App.tsx`, `src/components/GameNav.tsx` (новый), `src/screens/GameScreen.tsx`, `src/index.css` (блок в конце файла). Коммит `cc0c2aa`; опубликовано 2026-11-06 (`origin/main` = `3967d02`), деплой https://github.com/aStormspirit/chebutap/actions/runs/42186085528 — SUCCESS.
 - Проверки: lint (2 прежних предупреждения), build PASS; браузер 390×844 и 320×568 PASS; reviewer PASS.
 - Не сделано / проблемы: `BottomNav.tsx` и CSS `.bg-doodles/.app-main/.nav-item/.bottom-nav` больше не используются; иконки зданий и улучшений — эмодзи; реальный Telegram не проверен.
-- Следующая точка входа: оценка пользователем на localhost:5173, затем push `main` (деплой).
+- Следующая точка входа: проверка в реальном Telegram; при желании — уборка `BottomNav.tsx` и мёртвого CSS.
 
 ## Предыдущая задача: установка LoopOS (2026-11-05)
 

@@ -1,6 +1,6 @@
 # Текущая задача: дизайн остальных экранов
 
-Обновлено: 2026-11-05. id `2026-11-05-screens-design`, статус READY_FOR_ACCEPTANCE, режим `--no-deploy`. Слито в локальную `main` (`cc0c2aa`), не запушено; проверка на localhost:5173.
+Обновлено: 2026-11-05. id `2026-11-05-screens-design`, статус DONE. Принято пользователем 2026-11-06, опубликовано (`3967d02`, деплой https://github.com/aStormspirit/chebutap/actions/runs/42186085528 SUCCESS).
 Запрос: привести tasks/town/upgrades/account к стилю нового экрана earn и запустить локально.
 
 ---
