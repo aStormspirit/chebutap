@@ -6,7 +6,7 @@
 ## Последняя задача: вкладка «Кошелёк» в аккаунте (2026-11-06)
 
 - Реализовано: вкладки «Профиль» / «Кошелёк» в `AccountScreen`; вкладка показывает TON и все jettons подключённого кошелька через публичный TonAPI (testnet при `chain === '-3'`), FoodFI — крупной карточкой сверху, кнопка «Обновить», без кошелька — кнопка подключения.
-- Изменены: `src/screens/AccountScreen.tsx`, новые `src/components/WalletTokens.tsx`, `src/lib/walletTokens.ts`, `src/index.css` (блок в конце), `.ai/*`.
+- Изменены: `src/screens/AccountScreen.tsx`, новые `src/components/WalletTokens.tsx`, `src/lib/walletTokens.ts`, `src/index.css` (блок в конце), `.ai/*`. Коммит `9bc025e`, деплой https://github.com/aStormspirit/chebutap/actions/runs/42190365129 — SUCCESS.
 - Проверки: lint (2 прежних предупреждения), build PASS; в браузере 390×844 пустое состояние вкладки; `fetchWalletTokens` на реальном testnet-адресе вернул TON + jettons с метаданными.
 - Не проверено: вид с подключённым кошельком и реальным FoodFI (в превью кошелёк не подключить); реальный Telegram.
 - Известные проблемы: FoodFI определяется по символу/имени `/food\s*-?\s*fi/i`, если не задан `VITE_FOODFI_JETTON_MASTER` (raw-адрес мастера `0:…`); TonAPI без ключа имеет лимиты запросов.
