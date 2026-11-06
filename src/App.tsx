@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { WebApp } from './lib/telegram';
+import { trackVisit } from './lib/trackVisit';
 import { GameNav } from './components/GameNav';
 import { Modals } from './components/Modals';
 import { AccountScreen } from './screens/AccountScreen';
@@ -24,6 +25,7 @@ export default function App() {
     } catch {
       // browser preview without Telegram
     }
+    trackVisit();
   }, []);
 
   if (tab === 'earn') {

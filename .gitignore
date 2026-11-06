@@ -25,3 +25,6 @@ dist-ssr
 
 # LoopOS worktrees
 .worktrees/
+
+# Supabase CLI
+supabase/.temp/

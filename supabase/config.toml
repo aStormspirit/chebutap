@@ -1,0 +1,5 @@
+project_id = "zpcwafdgezfuqdurtodt"
+
+# Функция сама проверяет подпись Telegram initData, JWT Supabase клиенту не нужен.
+[functions.track-visit]
+verify_jwt = false

@@ -149,3 +149,9 @@ worktree — `.worktrees/` (не версионируется). Правила �
 
 - `src/lib/walletTokens.ts` читает балансы TON и jettons через публичный TonAPI без ключа (`tonapi.io` / `testnet.tonapi.io` по `wallet.account.chain`), суммы форматируются через BigInt по `decimals`.
 - FoodFI выбирается по `VITE_FOODFI_JETTON_MASTER` (raw-адрес мастера), иначе по символу/имени. Отображение — `src/components/WalletTokens.tsx`, вкладка «Кошелёк» в `AccountScreen`.
+
+## Учёт игроков — Supabase (2026-11-07)
+
+- Проект Supabase `zpcwafdgezfuqdurtodt`. Схема — `supabase/migrations/`, функция — `supabase/functions/track-visit/`.
+- Поток: `App.tsx` → `trackVisit()` (`src/lib/trackVisit.ts`) → POST `{ initData }` на `/functions/v1/track-visit` → проверка HMAC токеном бота (секрет `TELEGRAM_BOT_TOKEN`, `auth_date` не старше 24 ч) → RPC `track_player_visit` (upsert в `public.players`).
+- URL функции можно переопределить `VITE_TRACK_VISIT_URL`. Секреты (пароль БД, токен бота, service role) — только в Supabase, не в репозитории и не в клиенте.
