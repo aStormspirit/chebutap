@@ -4,66 +4,7 @@
 // и вызывает public.track_player_visit под service role.
 // Секрет функции: TELEGRAM_BOT_TOKEN. SUPABASE_URL и SUPABASE_SERVICE_ROLE_KEY Supabase задаёт сам.
 
-const MAX_AGE_SECONDS = 24 * 60 * 60;
-
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'content-type, authorization, apikey, x-client-info',
-};
-
-const json = (status: number, body: unknown) =>
-  new Response(JSON.stringify(body), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
-
-const enc = new TextEncoder();
-
-async function hmac(key: Uint8Array, data: string): Promise<Uint8Array> {
-  const k = await crypto.subtle.importKey('raw', key, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  return new Uint8Array(await crypto.subtle.sign('HMAC', k, enc.encode(data)));
-}
-
-const toHex = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
-
-function safeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-}
-
-type TgUser = {
-  id: number;
-  username?: string;
-  first_name?: string;
-  last_name?: string;
-  language_code?: string;
-  is_premium?: boolean;
-};
-
-async function verifyInitData(initData: string, botToken: string): Promise<TgUser | null> {
-  const params = new URLSearchParams(initData);
-  const hash = params.get('hash');
-  if (!hash) return null;
-  params.delete('hash');
-
-  const dataCheckString = [...params.entries()]
-    .map(([k, v]) => `${k}=${v}`)
-    .sort()
-    .join('\n');
-  const secret = await hmac(enc.encode('WebAppData'), botToken);
-  const expected = toHex(await hmac(secret, dataCheckString));
-  if (!safeEqual(expected, hash.toLowerCase())) return null;
-
-  const authDate = Number(params.get('auth_date'));
-  if (!Number.isFinite(authDate) || Date.now() / 1000 - authDate > MAX_AGE_SECONDS) return null;
-
-  try {
-    const user = JSON.parse(params.get('user') ?? 'null') as TgUser | null;
-    return user && Number.isSafeInteger(user.id) ? user : null;
-  } catch {
-    return null;
-  }
-}
+import { CORS, json, verifyInitData } from '../_shared/telegram.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });

@@ -155,3 +155,10 @@ worktree — `.worktrees/` (не версионируется). Правила �
 - Проект Supabase `zpcwafdgezfuqdurtodt`. Схема — `supabase/migrations/`, функция — `supabase/functions/track-visit/`.
 - Поток: `App.tsx` → `trackVisit()` (`src/lib/trackVisit.ts`) → POST `{ initData }` на `/functions/v1/track-visit` → проверка HMAC токеном бота (секрет `TELEGRAM_BOT_TOKEN`, `auth_date` не старше 24 ч) → RPC `track_player_visit` (upsert в `public.players`).
 - URL функции можно переопределить `VITE_TRACK_VISIT_URL`. Секреты (пароль БД, токен бота, service role) — только в Supabase, не в репозитории и не в клиенте.
+
+## Напоминание «энергия пополнилась» (2026-11-07)
+
+- Клиент (`src/lib/energyReminder.ts`) при уходе из игры шлёт в `energy-schedule` секунды до полной энергии, при возвращении — `null`. Время полной энергии хранит `players.energy_full_at` (считает сервер).
+- pg_cron (`notify-energy`, каждую минуту) → Edge Function `notify-energy` → `claim_energy_reminders` (атомарно, лимит 1 раз в 6 ч) → Bot API `sendMessage`. URL и секрет для cron — в Vault (`notify_energy_url`, `notify_energy_secret`).
+- Общая проверка Telegram initData — `supabase/functions/_shared/telegram.ts`.
+

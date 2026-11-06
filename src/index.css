@@ -1324,84 +1324,102 @@ ul {
   pointer-events: none;
 }
 
-/* Door sprite: 4 frames in a row (closed → 35° → 65° → open), cycle every 10 s. */
+/* Door sprite: 4 frames in a row (closed → 35° → 65° → open); the frame is set from
+   RestaurantScene when the customer comes in or leaves. */
 .gs-scene__door {
+  z-index: 1;
   background: url(/figma/restaurant/door-sprite.webp) 0 0 / 400% 100% no-repeat;
-  animation: gs-door-cycle 10s step-end infinite;
 }
 
-@keyframes gs-door-cycle {
-  0% {
-    background-position-x: 0%;
-  }
-  1% {
-    background-position-x: 33.333%;
-  }
-  2% {
-    background-position-x: 66.667%;
-  }
-  3% {
-    background-position-x: 100%;
-  }
-  13% {
-    background-position-x: 66.667%;
-  }
-  14% {
-    background-position-x: 33.333%;
-  }
-  15%,
-  100% {
-    background-position-x: 0%;
-  }
+/* Customer sprite sheet: 4 × 4 cells; position, cell and z-index come from customerTimeline. */
+.gs-scene__boy {
+  position: absolute;
+  pointer-events: none;
+  background: url(/figma/restaurant/customer-boy.webp?v=3) 0 0 / 400% 400% no-repeat;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .gs-scene__door {
-    animation: none;
-  }
+/* Ready dish in a serving-counter tray. */
+.gs-scene__dish {
+  position: absolute;
+  z-index: 9;
+  pointer-events: none;
+  rotate: -8deg;
+  filter: drop-shadow(0 2px 1px rgba(60, 35, 10, 0.35));
+  animation: gs-dish-pop 0.3s ease-out;
 }
 
-/* Chef: the tap target. The ::before widens the touch area around the small figure. */
+@keyframes gs-dish-pop {
+  0% { scale: 0; }
+  70% { scale: 1.15; }
+  100% { scale: 1; }
+}
+
+/* Order bubble above a seated customer; position and pop scale are set from RestaurantScene. */
+.gs-scene__bubble {
+  position: absolute;
+  z-index: 11;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 2px 3px rgba(60, 35, 10, 0.35));
+}
+
+.gs-scene__bubble svg {
+  display: block;
+  overflow: visible;
+}
+
+/* Chef: a 4 × 3 sprite sheet (idle / turn / cook); the cell is set from RestaurantScene.
+   Not tappable: taps go through to the scene. */
 .gs-chef {
   position: absolute;
-  padding: 0;
-  border: 0;
-  background: none;
-  touch-action: manipulation;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  z-index: 10;
+  pointer-events: none;
 }
 
-.gs-chef::before {
-  content: '';
-  position: absolute;
-  inset: -20% -70%;
-}
-
-.gs-chef img {
+.gs-chef__sprite {
   position: relative;
   display: block;
   width: 100%;
   height: 100%;
-  transform-origin: 50% 100%;
-  transition: transform 0.08s ease;
+  background: url(/figma/restaurant/chef-sprite.webp?v=3) 0 0 / 400% 300% no-repeat;
   filter: drop-shadow(0 4px 4px rgba(60, 40, 10, 0.25));
   pointer-events: none;
 }
 
-.gs-chef--pressed img {
-  transform: scale(1.06, 0.9);
-}
-
-.gs-chef.tap-area--empty img {
-  animation: shake 0.18s linear;
-}
-
-/* The play area only holds Boost/Shop here; let taps through to the chef. */
+/* The play area only holds Boost/Shop here; let taps through to the scene (customer). */
 .game-screen--restaurant .gs-play {
   pointer-events: none;
 }
 
 .game-screen--restaurant .gs-play > * {
   pointer-events: auto;
+}
+
+/* «Еда» menu: a wooden sheet right above the bottom nav; the nav stays on top of the dim layer. */
+.gs-nav-wrap {
+  position: relative;
+  z-index: 60;
+}
+
+.food-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(40, 25, 10, 0.45);
+}
+
+.food-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  display: grid;
+  justify-items: center;
+  padding: 0 var(--gs-gutter) 10px;
+}
+
+.food-card__img {
+  flex: none;
+  width: 64px;
+  height: 44px;
 }

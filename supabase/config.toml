@@ -3,3 +3,11 @@ project_id = "zpcwafdgezfuqdurtodt"
 # Функция сама проверяет подпись Telegram initData, JWT Supabase клиенту не нужен.
 [functions.track-visit]
 verify_jwt = false
+
+# Подпись Telegram initData проверяет сама функция.
+[functions.energy-schedule]
+verify_jwt = false
+
+# Вызывает pg_cron; функция проверяет заголовок x-cron-secret.
+[functions.notify-energy]
+verify_jwt = false

@@ -177,3 +177,6 @@ export const SHOP_PACKS = [
     refillEnergy: true,
   },
 ] as const;
+
+/** Dishes in the food menu; the chef cooks one per «Готовить» press. */
+export const FOODS = [{ id: 'cheburek', name: 'Чебурек', icon: '/figma/food-cheburek.svg', energy: 30 }];

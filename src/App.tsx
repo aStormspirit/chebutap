@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { WebApp } from './lib/telegram';
 import { trackVisit } from './lib/trackVisit';
+import { useEnergyReminder } from './lib/energyReminder';
 import { GameNav } from './components/GameNav';
 import { Modals } from './components/Modals';
 import { AccountScreen } from './screens/AccountScreen';
@@ -9,12 +10,26 @@ import { TasksScreen } from './screens/TasksScreen';
 import { TownScreen } from './screens/TownScreen';
 import { UpgradesScreen } from './screens/UpgradesScreen';
 import { useGameStore } from './store/gameStore';
+import { useKitchen } from './store/kitchenStore';
 import type { ModalId, TabId } from './types/game';
 
 export default function App() {
   const store = useGameStore();
+  const kitchen = useKitchen();
   const [tab, setTab] = useState<TabId>('earn');
   const [modal, setModal] = useState<ModalId>(null);
+  const [foodOpen, setFoodOpen] = useState(false);
+  useEnergyReminder(store.state);
+
+  /** The «Еда» nav button opens the food menu over the restaurant; a second press closes it. */
+  const handleTab = (next: TabId) => {
+    if (next === 'earn') {
+      setFoodOpen((open) => (tab === 'earn' ? !open : true));
+    } else {
+      setFoodOpen(false);
+    }
+    setTab(next);
+  };
 
   useEffect(() => {
     try {
@@ -33,8 +48,11 @@ export default function App() {
       <div className="app-shell app-shell--game">
         <GameScreen
           store={store}
+          kitchen={kitchen}
           activeTab={tab}
-          onTabChange={setTab}
+          onTabChange={handleTab}
+          foodOpen={foodOpen}
+          onFoodClose={() => setFoodOpen(false)}
           onBoost={() => setModal('boost')}
           onShop={() => setModal('shop')}
           onSettings={() => setModal('settings')}
@@ -60,7 +78,7 @@ export default function App() {
             />
           )}
         </main>
-        <GameNav active={tab} onChange={setTab} />
+        <GameNav active={tab} onChange={handleTab} />
       </div>
       <Modals modal={modal} store={store} onClose={() => setModal(null)} />
     </div>

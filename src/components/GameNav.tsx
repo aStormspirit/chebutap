@@ -1,7 +1,7 @@
 import type { TabId } from '../types/game';
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
-  { id: 'earn', label: 'Earn', icon: '/figma/game-coin.svg' },
+  { id: 'earn', label: 'Еда', icon: '/figma/food-cheburek.svg' },
   { id: 'tasks', label: 'Tasks', icon: '/figma/game-clipboard.svg' },
   { id: 'town', label: 'Town', icon: '/figma/game-globe.svg' },
   { id: 'upgrades', label: 'Upgrade', icon: '/figma/game-arrow.svg' },

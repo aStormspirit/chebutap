@@ -3,9 +3,10 @@ import { BUILDINGS, STORAGE_KEY, TASKS, UPGRADES } from '../data/content';
 import { upgradeCost } from '../lib/format';
 import type { GameState } from '../types/game';
 
-const BASE_MAX_ENERGY = 500;
+const BASE_MAX_ENERGY = 100;
 const BASE_TAP = 1;
-const BASE_REGEN = 1;
+/** Energy per second: +1 every 5 s. */
+const BASE_REGEN = 0.2;
 
 function createInitialState(): GameState {
   return {
@@ -176,6 +177,11 @@ export function useGameStore() {
     return earned;
   }, []);
 
+  /** Spend energy on an action (e.g. cooking); the caller checks there is enough. */
+  const spendEnergy = useCallback((amount: number) => {
+    setState((prev) => ({ ...prev, energy: Math.max(0, prev.energy - amount) }));
+  }, []);
+
   const buyUpgrade = useCallback((id: string) => {
     const def = UPGRADES.find((u) => u.id === id);
     if (!def) return false;
@@ -302,6 +308,7 @@ export function useGameStore() {
     state,
     incomePerSec,
     tap,
+    spendEnergy,
     buyUpgrade,
     buyBuilding,
     claimTask,

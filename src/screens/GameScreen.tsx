@@ -1,57 +1,47 @@
-import { useCallback, useRef, useState } from 'react';
-import { WebApp } from '../lib/telegram';
+import { useCallback } from 'react';
+import { FoodMenu } from '../components/FoodMenu';
 import { GameNav } from '../components/GameNav';
 import { RestaurantScene } from '../components/RestaurantScene';
 import { WalletConnect } from '../components/WalletConnect';
+import { FOODS } from '../data/content';
 import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';
-import type { FloatingText, TabId } from '../types/game';
+import type { Kitchen } from '../store/kitchenStore';
+import type { TabId } from '../types/game';
 
 type Props = {
   store: GameStore;
+  /** Cooking and the serving counter; lives in App so it survives tab switches. */
+  kitchen: Kitchen;
   activeTab: TabId;
   onTabChange: (tab: TabId) => void;
   onBoost: () => void;
   onShop: () => void;
   onSettings: () => void;
+  /** «Еда» menu above the nav, toggled from the nav button. */
+  foodOpen: boolean;
+  onFoodClose: () => void;
 };
 
 /**
  * Earn screen as a flex column: top bar → balance → tap area → energy → nav.
  * The nav is the last row, so it always sits flush with the viewport bottom.
- * Behind the UI sits the restaurant scene; tapping the chef earns coins.
+ * Behind the UI sits the restaurant scene; the chef cooks when a dish is ordered from
+ * the «Еда» menu, which costs energy.
  */
-export function GameScreen({ store, activeTab, onTabChange, onBoost, onShop, onSettings }: Props) {
-  const { state, tap } = store;
-  const [pressed, setPressed] = useState(false);
-  const [floats, setFloats] = useState<FloatingText[]>([]);
-  const floatId = useRef(0);
-  const areaRef = useRef<HTMLButtonElement>(null);
+export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, onShop, onSettings, foodOpen, onFoodClose }: Props) {
+  const { state, spendEnergy } = store;
+  const { cookStartedAt, ready, counterFull, startCooking, serve } = kitchen;
 
-  const handleTap = useCallback(
-    (clientX?: number, clientY?: number) => {
-      const earned = tap(1);
-      if (!earned) {
-        areaRef.current?.classList.add('tap-area--empty');
-        window.setTimeout(() => areaRef.current?.classList.remove('tap-area--empty'), 180);
-        return;
-      }
-      try {
-        WebApp.HapticFeedback.impactOccurred('light');
-      } catch {
-        // ignore
-      }
-      setPressed(true);
-      window.setTimeout(() => setPressed(false), 90);
-
-      const rect = areaRef.current?.getBoundingClientRect();
-      const x = clientX && rect ? clientX - rect.left : rect ? rect.width / 2 : 120;
-      const y = clientY && rect ? clientY - rect.top : rect ? rect.height / 2 : 120;
-      const id = ++floatId.current;
-      setFloats((prev) => [...prev.slice(-12), { id, x, y, value: earned }]);
-      window.setTimeout(() => setFloats((prev) => prev.filter((f) => f.id !== id)), 700);
+  const handleCook = useCallback(
+    (foodId: string) => {
+      const food = FOODS.find((f) => f.id === foodId);
+      if (!food || state.energy < food.energy) return;
+      spendEnergy(food.energy);
+      startCooking();
+      onFoodClose();
     },
-    [tap],
+    [onFoodClose, spendEnergy, startCooking, state.energy],
   );
 
   const boostLeft = Math.max(0, state.boostEndsAt - Date.now());
@@ -61,25 +51,13 @@ export function GameScreen({ store, activeTab, onTabChange, onBoost, onShop, onS
   return (
     <div className="game-screen game-screen--restaurant" data-node-id="3:945">
       <RestaurantScene
+        cookStartedAt={cookStartedAt}
+        ready={ready}
+        onServe={serve}
         renderChef={(style) => (
-          <button
-            ref={areaRef}
-            type="button"
-            className={`gs-chef ${pressed ? 'gs-chef--pressed' : ''}`}
-            style={style}
-            aria-label="Тап"
-            onPointerDown={(e) => {
-              e.preventDefault();
-              handleTap(e.clientX, e.clientY);
-            }}
-          >
-            <img src="/figma/restaurant/chef.webp" alt="" draggable={false} />
-            {floats.map((f) => (
-              <span key={f.id} className="float-coin" style={{ left: f.x, top: f.y }}>
-                +{formatNumber(f.value)}
-              </span>
-            ))}
-          </button>
+          <span className="gs-chef" style={style} aria-hidden>
+            <span className="gs-chef__sprite" />
+          </span>
         )}
       />
 
@@ -128,7 +106,14 @@ export function GameScreen({ store, activeTab, onTabChange, onBoost, onShop, onS
         </span>
       </div>
 
-      <GameNav active={activeTab} onChange={onTabChange} />
+      <div className="gs-nav-wrap">
+        {foodOpen && <FoodMenu
+            cooking={cookStartedAt !== null}
+            full={counterFull}
+            energy={state.energy}
+            onCook={handleCook} onClose={onFoodClose} />}
+        <GameNav active={activeTab} onChange={onTabChange} />
+      </div>
     </div>
   );
 }
