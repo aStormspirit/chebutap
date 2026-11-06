@@ -144,3 +144,8 @@ worktree — `.worktrees/` (не версионируется). Правила �
 - В Telegram подключение целенаправленно открывает Walt через `openSingleWalletModal('telegram-wallet')`: это другой кошелёк, чем `telegram` (sendgrams). В браузере сохраняется общая модалка выбора. Ссылку и открытие внутри Telegram выполняет SDK.
 
 - Telegram-маршрут исправлен после проверки пользователем: вместо модалки `openSingleWalletModal` используется `connectTelegramWallet`. Официальный connector формирует запрос по remote descriptor из getWallets; полученная HTTPS t.me ссылка открывается непосредственно `WebApp.openTelegramLink`. Внешние fallback ветки TON UI в этом сценарии не используются. Браузер сохраняет общую модалку.
+
+## Токены кошелька (2026-11-06)
+
+- `src/lib/walletTokens.ts` читает балансы TON и jettons через публичный TonAPI без ключа (`tonapi.io` / `testnet.tonapi.io` по `wallet.account.chain`), суммы форматируются через BigInt по `decimals`.
+- FoodFI выбирается по `VITE_FOODFI_JETTON_MASTER` (raw-адрес мастера), иначе по символу/имени. Отображение — `src/components/WalletTokens.tsx`, вкладка «Кошелёк» в `AccountScreen`.

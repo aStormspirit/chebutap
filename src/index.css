@@ -1140,3 +1140,158 @@ ul {
     font-size: 20px;
   }
 }
+
+/* Account: profile / wallet tabs */
+.account-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+
+.account-tabs__tab {
+  flex: 1;
+  padding: 8px 10px;
+  color: #ffe9c4;
+  font: inherit;
+  font-weight: 900;
+  text-shadow: var(--gs-label-shadow);
+  border: 2px solid var(--gs-outline);
+  border-radius: 12px;
+  background: rgba(74, 34, 8, 0.72);
+  box-shadow: 0 3px 0 #3a1a06;
+  cursor: pointer;
+}
+
+.account-tabs__tab.is-active {
+  color: #fff;
+  background: url(/figma/game-button-wood.png) center / cover, #8a4f1f;
+}
+
+.wallet-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wallet-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 12px;
+  color: #fff;
+  text-align: center;
+  border: 3px solid var(--gs-outline);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 200, 90, 0.35), rgba(74, 34, 8, 0.85)), #6b3a14;
+  box-shadow: inset 0 2px 0 rgba(255, 220, 160, 0.45), 0 4px 0 #3a1a06, 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.wallet-hero__label {
+  font-size: 14px;
+  font-weight: 900;
+  color: #ffe58a;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow: var(--gs-label-shadow);
+}
+
+.wallet-hero__amount {
+  font-size: 40px;
+  line-height: 1.1;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+  text-shadow: var(--gs-label-shadow);
+}
+
+.wallet-hero__symbol {
+  font-weight: 900;
+  color: #ffe9c4;
+  text-shadow: var(--gs-label-shadow);
+}
+
+.wallet-hero__hint,
+.wallet-error {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffe9c4;
+  text-shadow: var(--gs-label-shadow);
+}
+
+.wallet-error {
+  color: #ffb4a0;
+}
+
+.wallet-tab__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.wallet-tab__head .panel-sub {
+  margin: 0;
+}
+
+.wallet-refresh {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  text-shadow: var(--gs-label-shadow);
+  border: 2px solid var(--gs-outline);
+  border-radius: 10px;
+  background: url(/figma/game-button-wood.png) center / cover, #8a4f1f;
+  box-shadow: 0 2px 0 #3a1a06;
+  cursor: pointer;
+}
+
+.wallet-list .wallet-token {
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.wallet-token__icon {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--gs-outline);
+  background: #8a4f1f;
+  object-fit: cover;
+  font-weight: 900;
+}
+
+.wallet-token__icon--large {
+  width: 56px;
+  height: 56px;
+  font-size: 26px;
+}
+
+.wallet-token__name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.wallet-token__amount {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.wallet-token__amount small {
+  color: #ffe9c4;
+}
+
+.wallet-empty__connect {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
