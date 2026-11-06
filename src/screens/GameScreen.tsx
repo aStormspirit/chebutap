@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { WebApp } from '../lib/telegram';
 import { GameNav } from '../components/GameNav';
+import { RestaurantScene } from '../components/RestaurantScene';
 import { WalletConnect } from '../components/WalletConnect';
 import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';
@@ -18,6 +19,7 @@ type Props = {
 /**
  * Earn screen as a flex column: top bar → balance → tap area → energy → nav.
  * The nav is the last row, so it always sits flush with the viewport bottom.
+ * Behind the UI sits the restaurant scene; tapping the chef earns coins.
  */
 export function GameScreen({ store, activeTab, onTabChange, onBoost, onShop, onSettings }: Props) {
   const { state, tap } = store;
@@ -57,8 +59,29 @@ export function GameScreen({ store, activeTab, onTabChange, onBoost, onShop, onS
   const energyPct = Math.min(100, (state.energy / state.maxEnergy) * 100);
 
   return (
-    <div className="game-screen" data-node-id="3:945">
-      <div className="game-screen__bg" aria-hidden />
+    <div className="game-screen game-screen--restaurant" data-node-id="3:945">
+      <RestaurantScene
+        renderChef={(style) => (
+          <button
+            ref={areaRef}
+            type="button"
+            className={`gs-chef ${pressed ? 'gs-chef--pressed' : ''}`}
+            style={style}
+            aria-label="Тап"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              handleTap(e.clientX, e.clientY);
+            }}
+          >
+            <img src="/figma/restaurant/chef.webp" alt="" draggable={false} />
+            {floats.map((f) => (
+              <span key={f.id} className="float-coin" style={{ left: f.x, top: f.y }}>
+                +{formatNumber(f.value)}
+              </span>
+            ))}
+          </button>
+        )}
+      />
 
       <header className="gs-top">
         <button type="button" className="gs-chip gs-chip--gem" onClick={onShop} aria-label="Алмазы: пополнить">
@@ -85,25 +108,6 @@ export function GameScreen({ store, activeTab, onTabChange, onBoost, onShop, onS
             x{state.boostMultiplier} · {Math.ceil(boostLeft / 1000)}с
           </div>
         )}
-
-        <button
-          ref={areaRef}
-          type="button"
-          className={`gs-coin ${pressed ? 'gs-coin--pressed' : ''}`}
-          onPointerDown={(e) => {
-            e.preventDefault();
-            handleTap(e.clientX, e.clientY);
-          }}
-        >
-          <span className="gs-coin__glow" />
-          <span className="gs-coin__ring" />
-          <img src="/figma/tap-coin-clean.png" alt="Тап" draggable={false} />
-          {floats.map((f) => (
-            <span key={f.id} className="float-coin" style={{ left: f.x, top: f.y }}>
-              +{formatNumber(f.value)}
-            </span>
-          ))}
-        </button>
 
         <button type="button" className="gs-tile gs-side gs-side--boost" onClick={onBoost}>
           <img src="/figma/game-flame.svg" width={30} height={27} alt="" />

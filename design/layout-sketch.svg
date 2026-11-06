@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920" font-family="Arial, sans-serif">
+  <!-- lower camera: corner C=(600,700); right wall dir U=(1,0.55); left wall dir V=(-1,0.32) -->
+
+  <!-- dining floor -->
+  <rect width="1080" height="1920" fill="#f7e6c6"/>
+  <g stroke="#dcc49c" stroke-width="2">
+    <path d="M 500 732 L 1500 1282 M 400 764 L 1400 1314 M 300 796 L 1300 1346 M 200 828 L 1200 1378 M 100 860 L 1100 1410 M 0 892 L 1000 1442 M -100 924 L 900 1474 M -200 956 L 800 1506"/>
+    <path d="M 700 755 L -300 1075 M 800 810 L -200 1130 M 900 865 L -100 1185 M 1000 920 L 0 1240"/>
+  </g>
+
+  <!-- kitchen floor: boundary lowered, bigger dining area -->
+  <polygon points="0,1520 1080,1066 1080,1920 0,1920" fill="#dde8ea"/>
+  <g stroke="#c3d3d6" stroke-width="2">
+    <path d="M 0 1640 L 1080 1186 M 0 1760 L 1080 1306 M 0 1880 L 1080 1426 M 0 2000 L 1080 1546"/>
+    <path d="M 200 1436 L 1100 1931 M 500 1310 L 1400 1805 M 800 1184 L 1700 1679 M 1050 1079 L 1950 1574 M -100 1562 L 800 2057"/>
+  </g>
+  <line x1="0" y1="1520" x2="1080" y2="1066" stroke="#5a3a22" stroke-width="5"/>
+
+  <!-- walls -->
+  <polygon points="600,700 0,892 0,-100 600,-100" fill="#e8d3ad" stroke="#5a3a22" stroke-width="6"/>
+  <polygon points="600,700 1080,964 1080,-100 600,-100" fill="#f0dfbd" stroke="#5a3a22" stroke-width="6"/>
+  <polygon points="600,700 0,892 0,800 600,608" fill="#c08a55" opacity="0.6"/>
+  <polygon points="600,700 1080,964 1080,872 600,608" fill="#c08a55" opacity="0.6"/>
+
+  <!-- left wall: door (moved left), no menu board -->
+  <polygon points="350,780 130,850 130,530 350,460" fill="#bfe3f2" stroke="#5a3a22" stroke-width="5"/>
+  <line x1="240" y1="815" x2="240" y2="495" stroke="#5a3a22" stroke-width="4"/>
+  <text x="240" y="668" text-anchor="middle" font-size="34" font-weight="bold" fill="#2f5866" transform="rotate(-17.7 240 668)">ВХОД</text>
+
+  <!-- right wall: sign only, no window -->
+  <polygon points="650,447 900,585 900,505 650,367" fill="#c98a4b" stroke="#5a3a22" stroke-width="5"/>
+  <text x="775" y="488" text-anchor="middle" font-size="34" font-weight="bold" fill="#ffffff" transform="rotate(28.8 775 488)">НЕЧЕБУРЕКИ</text>
+
+  <!-- tables -->
+  <g stroke="#5a3a22" stroke-width="5">
+    <polygon points="400,900 490,950 380,986 290,936" fill="#f6c27a"/>
+    <polygon points="700,960 790,1010 680,1046 590,996" fill="none" stroke-dasharray="12 10"/>
+  </g>
+  <g font-size="28" font-weight="bold" text-anchor="middle" fill="#3b2614">
+    <text x="390" y="953">СТОЛ 1</text>
+    <text x="690" y="1013" fill="#8a6a4a">СТОЛ 2 🔒</text>
+  </g>
+  <path d="M 260 830 L 340 920" fill="none" stroke="#c0503a" stroke-width="5" stroke-dasharray="14 10"/>
+
+  <!-- L-shaped counter: long leg = cutting table along the boundary, short leg = serving counter into the kitchen -->
+  <polygon points="250,1440 1000,1125 1050,1152 410,1421 610,1531 490,1582" fill="#a8693a" stroke="#5a3a22" stroke-width="5" stroke-linejoin="round"/>
+  <g stroke="#5a3a22" stroke-width="3" fill="#f6c27a">
+    <polygon points="375,1452 420,1476 385,1488 340,1464"/>
+    <polygon points="465,1502 510,1526 475,1538 430,1514"/>
+  </g>
+  <text x="720" y="1275" text-anchor="middle" font-size="26" font-weight="bold" fill="#ffffff" transform="rotate(-22.8 720 1275)">разделочный стол</text>
+  <text x="560" y="1610" text-anchor="middle" font-size="22" font-weight="bold" fill="#3b2614" transform="rotate(28.8 560 1610)">раздача</text>
+
+  <!-- stove -->
+  <polygon points="960,1228 1035,1268 960,1308 885,1268" fill="#e07a4a" stroke="#5a3a22" stroke-width="4"/>
+  <text x="960" y="1277" text-anchor="middle" font-size="22" font-weight="bold" fill="#ffffff">плита</text>
+
+  <!-- chef -->
+  <circle cx="700" cy="1400" r="34" fill="#ffffff" stroke="#5a3a22" stroke-width="4"/>
+  <text x="700" y="1411" text-anchor="middle" font-size="30" font-weight="bold" fill="#3b2614">П</text>
+  <text x="700" y="1462" text-anchor="middle" font-size="22" font-weight="bold" fill="#3b2614">повар (тап)</text>
+
+  <text x="300" y="1180" font-size="26" font-weight="bold" fill="#8a6a4a">место для очереди и клиентов</text>
+
+  <!-- UI placement (TapGame layout) — reference only, not part of the background -->
+  <g fill="#000" fill-opacity="0.06" stroke="#c0302a" stroke-width="4" stroke-dasharray="14 10">
+    <rect x="69" y="75" width="433" height="138" rx="40"/>
+    <rect x="553" y="75" width="427" height="138" rx="40"/>
+    <rect x="63" y="1336" width="170" height="170" rx="30"/>
+    <rect x="841" y="1330" width="188" height="176" rx="30"/>
+    <rect x="0" y="1688" width="1080" height="232"/>
+  </g>
+  <g font-size="26" font-weight="bold" fill="#c0302a" text-anchor="middle">
+    <text x="285" y="152">UI: монеты</text>
+    <text x="766" y="152">UI: энергия</text>
+    <text x="148" y="1428">Boost</text>
+    <text x="935" y="1428">Shop</text>
+    <text x="540" y="1812">UI: навигация</text>
+  </g>
+</svg>
