@@ -1,7 +1,8 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { FoodMenu } from '../components/FoodMenu';
 import { GameNav } from '../components/GameNav';
 import { RestaurantScene } from '../components/RestaurantScene';
+import { Tutorial } from '../components/Tutorial';
 import { WalletConnect } from '../components/WalletConnect';
 import { FOODS } from '../data/content';
 import { formatNumber } from '../lib/format';
@@ -30,8 +31,17 @@ type Props = {
  * the «Еда» menu, which costs energy.
  */
 export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, onShop, onSettings, foodOpen, onFoodClose }: Props) {
-  const { state, spendEnergy } = store;
+  const { state, spendEnergy, sellDish } = store;
   const { cookStartedAt, ready, counterFull, startCooking, serve } = kitchen;
+  /** Customer waits with a raised hand; served count — both only drive the tutorial. */
+  const [waiting, setWaiting] = useState(false);
+  const [served, setServed] = useState(0);
+  const handleServe = useCallback(() => {
+    serve();
+    // Only chebureks are cooked so far, so every served order is one.
+    sellDish(FOODS[0].price);
+    setServed((n) => n + 1);
+  }, [sellDish, serve]);
 
   const handleCook = useCallback(
     (foodId: string) => {
@@ -53,7 +63,8 @@ export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, on
       <RestaurantScene
         cookStartedAt={cookStartedAt}
         ready={ready}
-        onServe={serve}
+        onServe={handleServe}
+        onWaitingChange={setWaiting}
         renderChef={(style) => (
           <span className="gs-chef" style={style} aria-hidden>
             <span className="gs-chef__sprite" />
@@ -94,7 +105,7 @@ export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, on
 
         <button type="button" className="gs-tile gs-side gs-side--shop" onClick={onShop}>
           <img src="/figma/game-shop.svg" width={28} height={28} alt="" />
-          <span className="gs-tile__label">Shop</span>
+          <span className="gs-tile__label">Магазин</span>
         </button>
       </div>
 
@@ -112,8 +123,10 @@ export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, on
             full={counterFull}
             energy={state.energy}
             onCook={handleCook} onClose={onFoodClose} />}
-        <GameNav active={activeTab} onChange={onTabChange} />
+        <GameNav active={foodOpen ? activeTab : null} onChange={onTabChange} />
       </div>
+
+      <Tutorial waiting={waiting} foodOpen={foodOpen} cooking={cookStartedAt !== null} ready={ready} served={served} />
     </div>
   );
 }

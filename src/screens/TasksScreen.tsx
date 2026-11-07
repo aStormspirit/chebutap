@@ -1,5 +1,4 @@
 import { TASKS } from '../data/content';
-import { CoinIcon } from '../components/icons';
 import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';
 
@@ -10,8 +9,8 @@ export function TasksScreen({ store }: Props) {
 
   return (
     <section className="panel-screen">
-      <h2 className="panel-title">Задания</h2>
-      <p className="panel-sub">Выполняй и забирай монеты</p>
+      <h2 className="panel-title">Задачи</h2>
+      <p className="panel-sub">Выполняй и забирай алмазы</p>
       <ul className="card-list">
         {TASKS.map((task) => {
           const done = state.completedTasks.includes(task.id);
@@ -33,7 +32,7 @@ export function TasksScreen({ store }: Props) {
               </div>
               <div className="game-card__side">
                 <span className="reward">
-                  <CoinIcon className="reward__icon" />
+                  <img className="reward__icon" src="/figma/game-gem.svg" width={18} height={15} alt="алмазы" />
                   {formatNumber(task.reward)}
                 </span>
                 {task.type === 'invite' && !done && (

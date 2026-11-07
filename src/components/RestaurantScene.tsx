@@ -78,6 +78,8 @@ type Props = {
   ready: number;
   /** Customer was served: take one dish off the counter. */
   onServe: () => void;
+  /** The seated customer starts or stops waiting for his order. */
+  onWaitingChange?: (waiting: boolean) => void;
 };
 
 /** Dish icon size on the counter, scene units. */
@@ -87,8 +89,12 @@ const DISH = { w: 52, h: 35 };
  * Restaurant background for the Earn screen: empty room, interior items, the door
  * a customer who comes in, sits at the table and leaves, and the chef who cooks. Spans the full width.
  */
-export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe }: Props) {
+export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe, onWaitingChange }: Props) {
   const cookRef = useRef(cookStartedAt);
+  const waitingChangeRef = useRef(onWaitingChange);
+  useEffect(() => {
+    waitingChangeRef.current = onWaitingChange;
+  }, [onWaitingChange]);
   const readyRef = useRef(ready);
   useEffect(() => {
     cookRef.current = cookStartedAt;
@@ -117,6 +123,7 @@ export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe }: P
         u = 0;
       }
       const frame = visitFrameAt(visit.index, u, visit.servedU);
+      if (visit.waiting !== frame.waiting) waitingChangeRef.current?.(frame.waiting);
       visit.waiting = frame.waiting;
       if (frame.waiting && !visit.surprised) {
         visit.surprised = true;
@@ -173,6 +180,7 @@ export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe }: P
     if (readyRef.current > 0) {
       visit.servedU = (performance.now() - visit.start) / 1000;
       visit.waiting = false;
+      waitingChangeRef.current?.(false);
       onServe();
       return;
     }
@@ -207,7 +215,7 @@ export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe }: P
         <img
           key={`${x}-${y}`}
           className="gs-scene__dish"
-          src="/figma/food-cheburek.svg"
+          src="/figma/food-cheburek.png"
           style={boxStyle({ x: x - DISH.w / 2, y: y - DISH.h / 2, ...DISH })}
           alt=""
           draggable={false}
@@ -228,7 +236,7 @@ export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe }: P
             stroke="#5a3418"
             strokeWidth="3"
           />
-          <image href="/figma/food-cheburek.svg" x="20" y="30" width="64" height="43" />
+          <image href="/figma/food-cheburek.png" x="20" y="30" width="64" height="43" />
         </svg>
       </span>
       {renderChef(boxStyle(CHEF))}

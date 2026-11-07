@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { BUILDINGS, STORAGE_KEY, TASKS, UPGRADES } from '../data/content';
+import { BUILDINGS, STORAGE_KEY, TASKS, TUTORIAL_STORAGE_KEY, UPGRADES } from '../data/content';
 import { upgradeCost } from '../lib/format';
 import type { GameState } from '../types/game';
 
@@ -18,6 +18,7 @@ function createInitialState(): GameState {
     energyRegen: BASE_REGEN,
     totalTaps: 0,
     totalEarned: 0,
+    totalServed: 0,
     upgradeLevels: { tap: 0, energy: 0, regen: 0 },
     buildingLevels: { stall: 0, bakery: 0, factory: 0, empire: 0 },
     completedTasks: [],
@@ -88,6 +89,8 @@ function applyOfflineProgress(state: GameState): GameState {
 export function useGameStore() {
   const [state, setState] = useState<GameState>(() => applyOfflineProgress(loadState()));
   const committedState = useRef(state);
+  /** Bumped by resetProgress so the app can restart the session-only parts (kitchen, scene, tutorial). */
+  const [resetId, setResetId] = useState(0);
 
   useLayoutEffect(() => {
     committedState.current = state;
@@ -182,6 +185,18 @@ export function useGameStore() {
     setState((prev) => ({ ...prev, energy: Math.max(0, prev.energy - amount) }));
   }, []);
 
+  /** A dish served to a customer: coins for the sale and progress on the serve tasks. */
+  const sellDish = useCallback((price: number) => {
+    setState((prev) => {
+      const totalServed = prev.totalServed + 1;
+      const taskProgress = { ...prev.taskProgress };
+      for (const task of TASKS) {
+        if (task.type === 'serve') taskProgress[task.id] = Math.min(task.target, totalServed);
+      }
+      return { ...prev, soft: prev.soft + price, totalEarned: prev.totalEarned + price, totalServed, taskProgress };
+    });
+  }, []);
+
   const buyUpgrade = useCallback((id: string) => {
     const def = UPGRADES.find((u) => u.id === id);
     if (!def) return false;
@@ -230,8 +245,7 @@ export function useGameStore() {
       ok = true;
       return {
         ...prev,
-        soft: prev.soft + def.reward,
-        totalEarned: prev.totalEarned + def.reward,
+        hard: prev.hard + def.reward,
         completedTasks: [...prev.completedTasks, id],
       };
     });
@@ -298,17 +312,21 @@ export function useGameStore() {
   const resetProgress = useCallback(() => {
     try {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(TUTORIAL_STORAGE_KEY);
     } catch {
       // Reset in memory even when storage is unavailable; saving will retry.
     }
     setState(createInitialState());
+    setResetId((n) => n + 1);
   }, []);
 
   return {
     state,
+    resetId,
     incomePerSec,
     tap,
     spendEnergy,
+    sellDish,
     buyUpgrade,
     buyBuilding,
     claimTask,

@@ -19,6 +19,14 @@ export default function App() {
   const [tab, setTab] = useState<TabId>('earn');
   const [modal, setModal] = useState<ModalId>(null);
   const [foodOpen, setFoodOpen] = useState(false);
+  const [seenResetId, setSeenResetId] = useState(store.resetId);
+  // Progress reset: start over like a new player — empty kitchen, café screen, fresh scene and tutorial.
+  if (seenResetId !== store.resetId) {
+    setSeenResetId(store.resetId);
+    kitchen.reset();
+    setTab('earn');
+    setFoodOpen(false);
+  }
   useEnergyReminder(store.state);
 
   /** The «Еда» nav button opens the food menu over the restaurant; a second press closes it. */
@@ -47,6 +55,7 @@ export default function App() {
     return (
       <div className="app-shell app-shell--game">
         <GameScreen
+          key={store.resetId}
           store={store}
           kitchen={kitchen}
           activeTab={tab}

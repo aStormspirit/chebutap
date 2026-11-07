@@ -33,39 +33,19 @@ export const UPGRADES: UpgradeDef[] = [
   },
 ];
 
+/** Current task list; new tasks are added here as the game grows. Rewards are diamonds. */
 export const TASKS: TaskDef[] = [
   {
-    id: 'taps_100',
-    title: 'Сделай 100 тапов',
-    reward: 5000,
-    target: 100,
-    type: 'taps',
-  },
-  {
-    id: 'taps_1000',
-    title: 'Сделай 1000 тапов',
-    reward: 25000,
-    target: 1000,
-    type: 'taps',
-  },
-  {
-    id: 'earn_50k',
-    title: 'Заработай 50 000 монет',
-    reward: 10000,
-    target: 50000,
-    type: 'earn',
-  },
-  {
-    id: 'upgrade_3',
-    title: 'Купи 3 улучшения',
-    reward: 15000,
-    target: 3,
-    type: 'upgrade',
+    id: 'serve_2',
+    title: 'Обслужи 2 гостей',
+    reward: 2,
+    target: 2,
+    type: 'serve',
   },
   {
     id: 'invite_1',
-    title: 'Пригласи друга',
-    reward: 50000,
+    title: 'Пригласи гостя',
+    reward: 5,
     target: 1,
     type: 'invite',
   },
@@ -111,6 +91,8 @@ export const BUILDINGS: BuildingDef[] = [
 ];
 
 export const STORAGE_KEY = 'chebutap-save-v1';
+/** Set to 'done' once the onboarding is finished; cleared by the progress reset. */
+export const TUTORIAL_STORAGE_KEY = 'chebutap.tutorial.v1';
 
 export const BOOSTS = [
   {
@@ -179,4 +161,4 @@ export const SHOP_PACKS = [
 ] as const;
 
 /** Dishes in the food menu; the chef cooks one per «Готовить» press. */
-export const FOODS = [{ id: 'cheburek', name: 'Чебурек', icon: '/figma/food-cheburek.svg', energy: 30 }];
+export const FOODS = [{ id: 'cheburek', name: 'Чебурек', icon: '/figma/food-cheburek.png', energy: 5, price: 3 }];

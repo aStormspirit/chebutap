@@ -22,8 +22,13 @@ export function useKitchen() {
 
   const startCooking = useCallback(() => setCookStartedAt(performance.now()), []);
   const serve = useCallback(() => setReady((n) => Math.max(0, n - 1)), []);
+  /** Empty the counter and stop cooking (progress reset). */
+  const reset = useCallback(() => {
+    setCookStartedAt(null);
+    setReady(0);
+  }, []);
 
-  return { cookStartedAt, ready, counterFull: ready >= COUNTER_TRAYS.length, startCooking, serve };
+  return { cookStartedAt, ready, counterFull: ready >= COUNTER_TRAYS.length, startCooking, serve, reset };
 }
 
 export type Kitchen = ReturnType<typeof useKitchen>;

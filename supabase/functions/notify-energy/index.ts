@@ -1,6 +1,6 @@
 // Supabase Edge Function: рассылает напоминание «энергия пополнилась». Вызывается pg_cron раз в минуту
 // (migrations/20261107010100_energy_reminder_cron.sql) с заголовком x-cron-secret.
-// Секреты: TELEGRAM_BOT_TOKEN, CRON_SECRET; MINI_APP_URL — https-адрес игры для кнопки «Играть» (необязательно).
+// Секреты: TELEGRAM_BOT_TOKEN, CRON_SECRET; MINI_APP_URL — https-адрес игры для кнопки «Играть» (необязательно, иначе берётся из кнопки меню бота).
 
 import { callRpc, json } from '../_shared/telegram.ts';
 
@@ -13,6 +13,17 @@ function safeEqual(a: string, b: string): boolean {
   let diff = 0;
   for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return diff === 0;
+}
+
+/** Адрес игры из кнопки меню бота (BotFather → Menu Button), если MINI_APP_URL не задан. */
+async function menuButtonUrl(botToken: string): Promise<string | undefined> {
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${botToken}/getChatMenuButton`);
+    const data = await res.json();
+    return data?.result?.type === 'web_app' ? data.result.web_app?.url : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 Deno.serve(async (req) => {
@@ -30,7 +41,9 @@ Deno.serve(async (req) => {
   }
   const due = (await claim.json()) as Due[];
 
-  const appUrl = Deno.env.get('MINI_APP_URL')?.trim();
+  if (due.length === 0) return json(200, { due: 0, sent: 0, blocked: 0 });
+
+  const appUrl = Deno.env.get('MINI_APP_URL')?.trim() || (await menuButtonUrl(botToken));
   const reply_markup = appUrl
     ? { inline_keyboard: [[{ text: '🍳 Играть', web_app: { url: appUrl } }]] }
     : undefined;

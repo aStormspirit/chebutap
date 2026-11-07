@@ -3,12 +3,80 @@
 Обновлено: 2026-11-05. База текущей задачи: `ff6ad10` на ветке `main`.
 Это снимок состояния, а не гарантия актуальности: при следующей задаче проверь Git повторно.
 
+## Последняя задача: окна по центру экрана (2026-11-07)
+
+- Реализовано (утверждено пользователем по `design/mockup-modal-centered-boost.jpg`): «Бусты», «Магазин», «Настройки» открываются по центру видимой области. `.modal-backdrop`: `place-items: center`, высота `var(--tg-viewport-stable-height, 100dvh)` (переменную ставит `telegram-web-app.js`), отступы сверху/снизу учитывают `--safe-top`/`--safe-bottom` и `--tg-content-safe-area-inset-*` (кнопки Telegram в fullscreen). `.modal`: `max-height: min(640px, 100%)` (длинное окно прокручивается внутри), скругление 24px со всех сторон, тень вниз, анимация `modal-pop` (лёгкое увеличение) вместо `slide-up`.
+- Изменены: `src/index.css`; новый `design/mockup-modal-centered-boost.jpg`. Не закоммичено.
+- Проверки: lint (2 прежних предупреждения), build PASS; превью — отступ сверху равен отступу снизу для всех трёх окон на 320×480, 360×640, 430×932; на 360×420 «Магазин» в пределах 16px-полей с прокруткой.
+- Осталось: проверка в реальном Telegram (fullscreen, клавиатура не используется).
+- Следующая точка входа: `.modal-backdrop` в `src/index.css`.
+
+## Последняя задача: две задачи с наградой в алмазах (2026-11-07)
+
+- Реализовано (утверждено пользователем по `design/mockup-tasks-gems.jpg`): в `TASKS` остались «Обслужи 2 гостей» (`serve_2`, 2 💎) и «Пригласи гостя» (`invite_1`, 5 💎; кнопка «Пригласить» по-прежнему только отмечает выполнение). Награда за задачи — алмазы (`claimTask` пополняет `hard`). Экран: «Задачи» / «Выполняй и забирай алмазы», иконка награды — `game-gem.svg`.
+- Подача блюда — `sellDish(price)` в `gameStore` (вместо `earnSoft`): монеты + `totalServed` (новое поле `GameState`) + прогресс всех задач типа `serve`. Новые задачи добавляются в `TASKS` (типы `serve` | `invite`).
+- Изменены: `src/data/content.ts`, `src/types/game.ts`, `src/store/gameStore.ts`, `src/screens/GameScreen.tsx`, `src/screens/TasksScreen.tsx`; новый `design/mockup-tasks-gems.jpg`. Не закоммичено.
+- Проверки: lint (2 прежних предупреждения), build PASS; превью: 2 подачи → 2/2, «Забрать» → +2 💎, «Пригласить» → «Забрать» → +5 💎 (итого 7), монеты не начисляются.
+- Известные проблемы: в `gameStore` остались записи прогресса старых задач (`taps_*`, `earn_50k`, `upgrade_3`) — безвредны, но мертвы; у старых сейвов в `taskProgress` лежат их ключи. Vite в превью однажды не подхватил серию быстрых правок — помог перезапуск dev-сервера.
+- Следующая точка входа: `TASKS` в `src/data/content.ts`.
+
+## Последняя задача: чебурек стоит 5 энергии (2026-11-07)
+
+- По запросу пользователя `FOODS[].energy` у чебурека 30 → 5 (`src/data/content.ts`); карточка в меню показывает «⚡ 5 · 5 с». Не закоммичено.
+- Проверки: превью — готовка 100 → 95; lint (2 прежних предупреждения), build PASS.
+- Известные проблемы: при 5 энергии и +1 за 5 с энергия почти не ограничивает игру (раздача на 3 блюда — главный ограничитель); баланс улучшений «Запас энергии»/«Восстановление» не пересмотрен.
+- Следующая точка входа: `FOODS` в `src/data/content.ts`.
+
+## Последняя задача: подсветка «Еда» и русские подписи навигации (2026-11-07)
+
+- Реализовано (утверждено пользователем по `design/mockup-nav-food-inactive.jpg`): в кафе «Еда» подсвечена только при открытом меню еды (`GameNav active={foodOpen ? activeTab : null}`, проп `active` теперь `TabId | null`); остальные вкладки подсвечиваются как раньше. Подписи переведены: «Tasks» → «Задачи», «Town» → «Город», «Upgrade» → «Улучшения», «Account» → «Аккаунт», кнопка «Shop» → «Магазин» («Boost» не менялась). На 360 px «Улучшения» влезает впритык (61 из 62 px).
+- Изменены: `src/components/GameNav.tsx`, `src/screens/GameScreen.tsx`; новый `design/mockup-nav-food-inactive.jpg`. Не закоммичено.
+- Проверки: lint (2 прежних предупреждения), build PASS; превью 390×844: меню закрыто — ничего не подсвечено, открыто — «Еда», «Задачи» — подсвечены «Задачи», возврат через «Еда» открывает меню и подсвечивает её.
+- Следующая точка входа: `src/components/GameNav.tsx`.
+
+## Последняя задача: полный сброс прогресса и +3 монеты за чебурек (2026-11-07)
+
+- Реализовано (утверждено пользователем): «Сбросить» (Настройки и Аккаунт) теперь удаляет и сейв, и флаг обучения `chebutap.tutorial.v1`, обнуляет кухню (`useKitchen().reset`: готовка, блюда на раздаче), переключает на кафе, закрывает меню и перемонтирует `GameScreen` (`key={store.resetId}`) — посетитель и обучение начинаются заново. Без перезагрузки страницы.
+- Подача заказа даёт `FOODS[].price` монет (чебурек — 3) через новый `earnSoft` в `gameStore` (идёт и в `totalEarned`); буст на цену не влияет.
+- Ключ обучения перенесён в `content.ts` (`TUTORIAL_STORAGE_KEY`). После сброса в `localStorage` остаётся только `chebutap-save-v1` с начальным состоянием; учёт заходов в Supabase сбросом не трогается.
+- Изменены: `src/data/content.ts`, `src/store/gameStore.ts` (`resetId`, `earnSoft`), `src/store/kitchenStore.ts` (`reset`), `src/App.tsx`, `src/screens/GameScreen.tsx`, `src/components/Tutorial.tsx`. Не закоммичено.
+- Проверки: lint (2 прежних предупреждения), build PASS; превью: подача → 0→3 монеты, флаг `done`; сброс во время готовки → 0 монет, 100/100, флаг удалён, обучение снова с шага «Еда», раздача пуста.
+- Известные проблемы: цена берётся у `FOODS[0]` — кухня не помнит, какое блюдо готовилось (пока блюдо одно).
+- Следующая точка входа: `handleServe` в `src/screens/GameScreen.tsx`.
+
+## Последняя задача: обучение при первом госте (2026-11-07)
+
+- Реализовано (утверждено пользователем по `design/mockup-tutorial-step1.jpg`): компонент `src/components/Tutorial.tsx`. Когда впервые садится гость и поднимает руку, по центру экрана появляется портрет повара (кадр спрайта в белой обводке) с облачком, а рука `public/figma/tutorial-hand.png` (сгенерирована пользователем, фон вырезан) с жёлтой пунктирной рамкой и зелёной стрелкой показывает цель: «Еда» → «Готовить» → гость → «Отлично, босс! Так и работаем 👍» (2,8 с). Шаги считаются по состоянию (меню открыто, готовка, блюдо на раздаче, подача), нажатия не блокируются. После подачи ставится флаг `localStorage['chebutap.tutorial.v1'] = 'done'`, больше не показывается.
+- Оверлей рендерится порталом в `document.body` (у `.game-screen` есть transform, `position: fixed` внутри ломается); z-index 65 — над навигацией и меню «Еда», под модалками.
+- Цели помечены `data-tutorial` («food-nav» в `GameNav`, «cook» в `FoodMenu`) и `.gs-scene__boy`. `RestaurantScene` получил проп `onWaitingChange`; `GameScreen` держит `waiting` и счётчик подач `served`.
+- Изменены: новые `src/components/Tutorial.tsx`, `public/figma/tutorial-hand.png`, `design/mockup-tutorial-step1.jpg`; `src/components/RestaurantScene.tsx`, `src/screens/GameScreen.tsx`, `src/components/GameNav.tsx`, `src/components/FoodMenu.tsx`, `src/index.css`. Не закоммичено.
+- Проверки: lint (2 прежних предупреждения), build PASS; браузер 375×812 — все 4 шага по очереди, после подачи флаг `done` и оверлей исчез, ошибок консоли нет.
+- Известные проблемы: рамка у гостя шире фигуры (размер кадра спрайта); при уходе на другую вкладку до подачи обучение начнётся заново со следующим гостем.
+- Следующая точка входа: `src/components/Tutorial.tsx` (тексты в `STEPS`).
+
+## Последняя задача: новая иконка чебурека (2026-11-07)
+
+- Реализовано (вариант выбран и утверждён пользователем): плоская 2D-иконка чебурека, сгенерирована пользователем в Gemini, белый фон вырезан, 256×150 PNG `public/figma/food-cheburek.png`. Подключена везде: меню «Еда» (`FOODS[].icon`), облачко заказа и блюда на раздаче (`RestaurantScene`), вкладка «Еда» (`GameNav`). `food-cheburek.svg` в коде больше не используется (файл оставлен). У `.food-card__img` и `.gs-scene__dish` добавлен `object-fit: contain` — PNG шире старого SVG.
+- Изменены: новый `public/figma/food-cheburek.png`; `src/data/content.ts`, `src/components/RestaurantScene.tsx`, `src/components/GameNav.tsx`, `src/index.css`. Не закоммичено.
+- Проверки: превью 375×812 — иконка в меню, облачке, на раздаче и на вкладке, ошибок в консоли нет; lint (2 прежних предупреждения), build PASS.
+- Осталось: при желании удалить неиспользуемый `public/figma/food-cheburek.svg`.
+- Следующая точка входа: `public/figma/food-cheburek.png`.
+
+## Последняя задача: окна «Магазин»/«Бусты»/«Настройки» прятались под навигацией (2026-11-07)
+
+- Исправлено: `.modal-backdrop` был ниже `.gs-nav-wrap` (z-index 50 < 60), нижняя навигация закрывала конец списка (видно на Android в Telegram). Теперь z-index 70 и нижний отступ учитывает `--safe-bottom`; окно перекрывает навигацию, пока открыто. Меню «Еда» не менялось (оно намеренно над навигацией).
+- Изменены: `src/index.css`. Не закоммичено.
+- Проверки: превью 360×640 — «Магазин» и «Бусты» видны целиком, нижний край окна не перекрыт; lint (2 прежних предупреждения), build PASS.
+- Осталось: проверка в реальном Telegram после деплоя.
+- Следующая точка входа: `.modal-backdrop` в `src/index.css`.
+
 ## Последняя задача: уведомление «энергия пополнилась» в боте (2026-11-07)
 
 - Реализовано (утверждено пользователем; частота — не чаще 1 раза в 6 ч): колонки `energy_full_at`, `energy_notified_at`, `bot_blocked` в `players`, SQL-функции `set_energy_reminder`, `claim_energy_reminders`, `mark_bot_blocked`; Edge Functions `energy-schedule` (ставит/отменяет, проверяет initData) и `notify-energy` (рассылка, вызывается pg_cron каждую минуту); клиентский хук `useEnergyReminder` в `App.tsx` (visibilitychange/pagehide/Telegram `deactivated`/`activated`). Текст: «⚡ Твоя энергия пополнилась! Заходи и готовь новые блюда 🥟», кнопка «🍳 Играть» при заданном `MINI_APP_URL`.
 - Изменены: новые `supabase/migrations/20261107010000_energy_reminder.sql`, `supabase/migrations/20261107010100_energy_reminder_cron.sql`, `supabase/functions/_shared/telegram.ts`, `supabase/functions/energy-schedule/index.ts`, `supabase/functions/notify-energy/index.ts`, `src/lib/energyReminder.ts`; `supabase/functions/track-visit/index.ts` (импорт общей проверки), `supabase/config.toml`, `src/App.tsx`. Не закоммичено.
-- Проверки: lint (2 прежних предупреждения), build PASS. SQL и Edge Functions не запускались (нет доступа к базе, нет deno).
-- Осталось: применить миграции; секреты функций `TELEGRAM_BOT_TOKEN`, `CRON_SECRET`, `MINI_APP_URL`; секреты Vault `notify_energy_url`, `notify_energy_secret`; задеплоить `track-visit`, `energy-schedule`, `notify-energy`; проверка в реальном Telegram.
+- Выкачено в Supabase 2026-11-07: миграции применены (`db push`, вкл. ранее вручную применённую `players`), функции `track-visit`, `energy-schedule`, `notify-energy` задеплоены; `CRON_SECRET` и Vault `notify_energy_url`/`notify_energy_secret` заданы; задача pg_cron `notify-energy` каждую минуту. `MINI_APP_URL` не задан — кнопка «Играть» берётся из кнопки меню бота (`getChatMenuButton`), если она web_app.
+- Проверки: lint (2 прежних предупреждения), build PASS; функции без подписи/секрета отвечают 401; cron-задача и секреты Vault на месте.
+- Осталось: закоммитить и выкатить игру (клиентский хук ещё не в проде); проверка в реальном Telegram.
 - Известные проблемы: если Telegram закрывает Mini App без событий страницы, напоминание не ставится; запросы «ушёл»/«вернулся» при очень быстром переключении могут прийти в обратном порядке; пишем только тем, кто нажимал Start у бота.
 - Следующая точка входа: деплой в Supabase, затем свернуть игру и через ~8 мин проверить сообщение.
 

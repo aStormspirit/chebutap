@@ -39,7 +39,7 @@ export function FoodMenu({ cooking, full, energy, onCook, onClose }: Props) {
                       <img src="/figma/game-bolt.svg" width={12} height={12} alt="" /> {food.energy} · {Math.round(CHEF_COOK_SECONDS)} с
                     </span>
                   </div>
-                  <button type="button" className="btn btn--wood" disabled={cooking || full || noEnergy} onClick={() => onCook(food.id)}>
+                  <button type="button" className="btn btn--wood" data-tutorial="cook" disabled={cooking || full || noEnergy} onClick={() => onCook(food.id)}>
                     {label}
                   </button>
                 </li>

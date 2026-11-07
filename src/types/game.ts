@@ -16,9 +16,10 @@ export interface UpgradeDef {
 export interface TaskDef {
   id: string;
   title: string;
+  /** Paid in diamonds (`hard`). */
   reward: number;
   target: number;
-  type: 'taps' | 'earn' | 'upgrade' | 'invite';
+  type: 'serve' | 'invite';
 }
 
 export interface BuildingDef {
@@ -40,6 +41,8 @@ export interface GameState {
   energyRegen: number;
   totalTaps: number;
   totalEarned: number;
+  /** Customers served with a dish; drives the serve tasks. */
+  totalServed: number;
   upgradeLevels: Record<string, number>;
   buildingLevels: Record<string, number>;
   completedTasks: string[];
