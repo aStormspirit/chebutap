@@ -35,6 +35,12 @@ const ITEMS: Array<Box & { src: string; z: number }> = [
 ];
 
 const BOY_Z = { left: 3, right: 6, walk: 8 } as const;
+/**
+ * Boy on the front (right) chair is seen from behind, between the seat and the backrest layers:
+ * hide what is below the seat's near edge, otherwise his legs show under the seat.
+ * Polygon in the boy box (sitting cells of `customer-boy.webp`, seat at `onTable(610, 470)`).
+ */
+const FRONT_SEAT_CLIP = 'polygon(0 0, 100% 0, 100% 100%, 66% 100%, 0 57%)';
 
 /** Bump when scene images are redrawn under the same names, so browsers drop cached copies. */
 const ASSET_VERSION = 3;
@@ -47,7 +53,7 @@ const DOOR: Box = { x: 41, y: 294, w: 186, h: 332 };
 const CHEF_SCALE = 0.94;
 const CHEF: Box = { x: 519 - 139.5 * CHEF_SCALE, y: 1135 - 291 * CHEF_SCALE, w: 300 * CHEF_SCALE, h: 299 * CHEF_SCALE };
 /** Walk from the idle spot to the cutting board so the dough lies on the board. */
-const CHEF_TO_TABLE = { x: -105, y: -75 };
+const CHEF_TO_TABLE = { x: -50, y: -95 };
 
 const pctX = (v: number) => `${(v / SCENE_W) * 100}%`;
 const pctY = (v: number) => `${(v / SCENE_H) * 100}%`;
@@ -58,16 +64,6 @@ const boxStyle = ({ x, y, w, h }: Box) => ({
   width: pctX(w),
   height: pctY(h),
 });
-
-/** Chef reacts once to a new order: a small surprised hop. */
-function chefSurprise(scene: HTMLElement | null) {
-  scene
-    ?.querySelector<HTMLElement>('.gs-chef__sprite')
-    ?.animate(
-      [{ top: '0%' }, { top: '-8%', offset: 0.3 }, { top: '0%', offset: 0.6 }, { top: '-2.5%', offset: 0.8 }, { top: '0%' }],
-      { duration: 480, easing: 'ease-out' },
-    );
-}
 
 type Props = {
   /** Tap target: the chef button, rendered by the caller so tap logic stays in GameScreen. */
@@ -101,7 +97,7 @@ export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe, onW
     readyRef.current = ready;
   }, [cookStartedAt, ready]);
   /** Current visit: which one, when it started (`performance.now()`), when he was served. */
-  const visitRef = useRef({ index: 0, start: 0, servedU: null as number | null, waiting: false, surprised: false });
+  const visitRef = useRef({ index: 0, start: 0, servedU: null as number | null, waiting: false, orderAt: null as number | null });
   const doorRef = useRef<HTMLSpanElement>(null);
   const boyRef = useRef<HTMLSpanElement>(null);
   const bubbleRef = useRef<HTMLSpanElement>(null);
@@ -119,21 +115,20 @@ export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe, onW
         visit.index = (visit.index + 1) % VISIT_COUNT;
         visit.start = now;
         visit.servedU = null;
-        visit.surprised = false;
         u = 0;
       }
       const frame = visitFrameAt(visit.index, u, visit.servedU);
       if (visit.waiting !== frame.waiting) waitingChangeRef.current?.(frame.waiting);
+      if (frame.waiting && !visit.waiting) visit.orderAt = now;
       visit.waiting = frame.waiting;
-      if (frame.waiting && !visit.surprised) {
-        visit.surprised = true;
-        chefSurprise(sceneRef.current);
-      }
       const chef = sceneRef.current?.querySelector<HTMLElement>('.gs-chef__sprite');
       if (chef) {
         const cookAt = cookRef.current;
-        const c = chefCellAt(cookAt === null ? null : (now - cookAt) / 1000);
+        const orderAt = visit.orderAt;
+        const c = chefCellAt(cookAt === null ? null : (now - cookAt) / 1000, orderAt === null ? null : (now - orderAt) / 1000);
+        chef.dataset.sheet = c.sheet;
         chef.style.backgroundPosition = `${(c.col * 100) / 3}% ${(c.row * 100) / 2}%`;
+        chef.style.scale = c.flip ? '-1 1' : '';
         chef.style.translate = `${((CHEF_TO_TABLE.x * c.step) / CHEF.w) * 100}% ${((CHEF_TO_TABLE.y * c.step) / CHEF.h) * 100}%`;
       }
       const door = doorRef.current;
@@ -147,6 +142,7 @@ export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe, onW
           boy.style.top = pctY(b.y);
           boy.style.opacity = String(b.opacity);
           boy.style.zIndex = String(BOY_Z[b.layer]);
+          boy.style.clipPath = b.layer === 'right' ? FRONT_SEAT_CLIP : '';
           boy.style.backgroundPosition = `${(b.col * 100) / 3}% ${(b.row * 100) / 3}%`;
           boy.style.pointerEvents = frame.waiting ? 'auto' : 'none';
           boy.style.cursor = frame.waiting ? 'pointer' : '';

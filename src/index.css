@@ -1393,6 +1393,11 @@ ul {
   pointer-events: none;
 }
 
+/* Walk cycles, idle and order reaction (chefCellAt `sheet: 'walk'`); same 4 × 3 cell grid. */
+.gs-chef__sprite[data-sheet='walk'] {
+  background-image: url(/figma/restaurant/chef-walk.webp?v=1);
+}
+
 /* The play area only holds Boost/Shop here; let taps through to the scene (customer). */
 .game-screen--restaurant .gs-play {
   pointer-events: none;
@@ -1440,31 +1445,18 @@ ul {
   pointer-events: none;
 }
 
-.tutorial__talk {
-  position: absolute;
-  left: 0;
-  right: 8px;
-  top: 50%;
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  transform: translateY(-50%);
-  animation: tutorial-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+.tutorial__chef {
+  position: fixed;
+  background: url(/figma/restaurant/chef-sprite.webp?v=3) 0 0 / 400% 300% no-repeat;
 }
 
-.tutorial__chef {
-  flex: none;
-  width: 150px;
-  height: 150px;
-  background: url('/figma/restaurant/chef-sprite.webp') 0 0 / 400% 300% no-repeat;
-  filter: drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff)
-    drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
+.tutorial__chef[data-sheet='walk'] {
+  background-image: url(/figma/restaurant/chef-walk.webp?v=1);
 }
 
 .tutorial__bubble {
-  position: relative;
-  flex: 1;
-  margin: 0 0 22px;
+  position: fixed;
+  margin: 0;
   padding: 12px 14px;
   border: 3px solid #5a3a1e;
   border-radius: 18px;
@@ -1474,28 +1466,30 @@ ul {
   font-size: 16px;
   font-weight: 600;
   line-height: 1.35;
+  transform-origin: 50% 100%;
+  animation: tutorial-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.tutorial__bubble::before,
-.tutorial__bubble::after {
+/* Tail under the bubble pointing down at the chef; `left` is set from JS. */
+.tutorial__tail {
+  position: absolute;
+  top: 100%;
+  width: 0;
+  height: 0;
+  margin-left: -12px;
+  border-style: solid;
+  border-width: 16px 12px 0;
+  border-color: #5a3a1e transparent transparent;
+}
+
+.tutorial__tail::after {
   content: '';
   position: absolute;
+  left: -8px;
+  top: -20px;
   border-style: solid;
-  border-color: transparent;
-}
-
-.tutorial__bubble::before {
-  left: -17px;
-  bottom: 22px;
-  border-width: 11px 17px 11px 0;
-  border-right-color: #5a3a1e;
-}
-
-.tutorial__bubble::after {
-  left: -11px;
-  bottom: 25px;
-  border-width: 8px 12px 8px 0;
-  border-right-color: #fffdf7;
+  border-width: 11px 8px 0;
+  border-color: #fffdf7 transparent transparent;
 }
 
 .tutorial__hint {
@@ -1506,28 +1500,12 @@ ul {
   opacity: 0.6;
 }
 
-.tutorial__frame {
-  position: fixed;
-  border-radius: 16px;
-  outline: 3px dashed #f2b43a;
-  box-shadow: 0 0 0 3px rgba(255, 248, 230, 0.9);
-}
-
-.tutorial__arrow {
+.tutorial__dim {
   position: absolute;
-  left: -10px;
-  top: -12px;
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border: 3px solid #fff;
-  border-radius: 50%;
-  background: #2fb34a;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 900;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: rgba(20, 10, 0, 0.5);
 }
 
 .tutorial__hand {
@@ -1547,13 +1525,14 @@ ul {
 @keyframes tutorial-pop {
   from {
     opacity: 0;
-    transform: translateY(-50%) scale(0.85);
+    transform: scale(0.85);
   }
 }
 
+
 @media (prefers-reduced-motion: reduce) {
   .tutorial__hand,
-  .tutorial__talk {
+  .tutorial__bubble {
     animation: none;
   }
 }
