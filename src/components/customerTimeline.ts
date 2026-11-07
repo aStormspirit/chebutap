@@ -1,8 +1,8 @@
 /**
  * Customer visits in the restaurant scene, as a pure function of time.
- * One boy alternates between the far chair (faces us) and the front chair
- * (back to us). The door opens when he comes in and when he leaves. Seated, he raises
- * his hand with the order and waits until he is served, then eats and leaves.
+ * Each chair (far: faces us, front: back to us) has its own visit: a boy or a girl comes in,
+ * sits, raises a hand with the order and waits until served, then eats and leaves.
+ * The door opens when someone comes in or leaves. Arrivals are random (`nextGuestDelay`).
  * Coordinates are scene units of the Figma frame (768 × 1376).
  */
 
@@ -131,7 +131,26 @@ function visitTimes(v: Visit, servedU: number | null) {
   return { walk, enter, sitAt, leaveAt, arrive, end: arrive + 0.9 + PAUSE };
 }
 
+/** Number of chairs; visit index = chair index. */
 export const VISIT_COUNT = VISITS.length;
+
+/** Customer sprites share one 4 × 4 layout (`customer-boy.webp`, `customer-girl.webp`). */
+export type GuestKind = 'boy' | 'girl';
+export const GUEST_KINDS: readonly GuestKind[] = ['boy', 'girl'];
+
+/** Delay before the very first customer, seconds. */
+export const FIRST_GUEST_DELAY = 1.5;
+
+/**
+ * Seconds until the next customer arrives: exponential (random arrivals) with mean
+ * `60 / perMinute`, clamped to 0.27…2 × mean (≈8…60 s at 2 guests per minute).
+ * `rand` is a uniform 0…1 number.
+ */
+export function nextGuestDelay(perMinute: number, rand: number): number {
+  const mean = 60 / Math.max(0.01, perMinute);
+  const d = -Math.log(1 - Math.min(rand, 0.999999)) * mean;
+  return Math.min(2 * mean, Math.max(0.27 * mean, d));
+}
 
 /** When visit `index` is over (Infinity until he is served). */
 export function visitEndAt(index: number, servedU: number | null): number {

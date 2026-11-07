@@ -4,11 +4,15 @@ import {
   BOY_W,
   BUBBLE_SIZE,
   COUNTER_TRAYS,
+  FIRST_GUEST_DELAY,
+  GUEST_KINDS,
   TABLE,
   VISIT_COUNT,
   chefCellAt,
+  nextGuestDelay,
   visitEndAt,
   visitFrameAt,
+  type GuestKind,
 } from './customerTimeline';
 
 /** Scene size in the Figma frame «Ресторан — слои»; item boxes below are in these units. */
@@ -36,9 +40,9 @@ const ITEMS: Array<Box & { src: string; z: number }> = [
 
 const BOY_Z = { left: 3, right: 6, walk: 8 } as const;
 /**
- * Boy on the front (right) chair is seen from behind, between the seat and the backrest layers:
- * hide what is below the seat's near edge, otherwise his legs show under the seat.
- * Polygon in the boy box (sitting cells of `customer-boy.webp`, seat at `onTable(610, 470)`).
+ * Customer on the front (right) chair is seen from behind, between the seat and the backrest layers:
+ * hide what is below the seat's near edge, otherwise the legs show under the seat.
+ * Polygon in the customer box (sitting cells of the customer sheets, seat at `onTable(610, 470)`).
  */
 const FRONT_SEAT_CLIP = 'polygon(0 0, 100% 0, 100% 100%, 66% 100%, 0 57%)';
 
@@ -74,113 +78,144 @@ type Props = {
   ready: number;
   /** Customer was served: take one dish off the counter. */
   onServe: () => void;
-  /** The seated customer starts or stops waiting for his order. */
+  /** Some seated customer starts waiting for an order / nobody waits any more. */
   onWaitingChange?: (waiting: boolean) => void;
+  /** Average customers per minute (base rate × «Реклама» multiplier). */
+  guestsPerMinute: number;
 };
 
 /** Dish icon size on the counter, scene units. */
 const DISH = { w: 52, h: 35 };
 
+/** One chair: who sits there and when the visit started (`performance.now()`, null = free). */
+type Slot = { kind: GuestKind; start: number | null; servedU: number | null; waiting: boolean };
+
+const CHAIRS = Array.from({ length: VISIT_COUNT }, (_, i) => i);
+
 /**
- * Restaurant background for the Earn screen: empty room, interior items, the door
- * a customer who comes in, sits at the table and leaves, and the chef who cooks. Spans the full width.
+ * Restaurant background for the Earn screen: empty room, interior items, the door,
+ * customers (boy or girl) who come in at random times, sit at the table and leave, and the chef who cooks.
  */
-export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe, onWaitingChange }: Props) {
+export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe, onWaitingChange, guestsPerMinute }: Props) {
   const cookRef = useRef(cookStartedAt);
   const waitingChangeRef = useRef(onWaitingChange);
+  const rateRef = useRef(guestsPerMinute);
   useEffect(() => {
     waitingChangeRef.current = onWaitingChange;
-  }, [onWaitingChange]);
+    rateRef.current = guestsPerMinute;
+  }, [onWaitingChange, guestsPerMinute]);
   const readyRef = useRef(ready);
   useEffect(() => {
     cookRef.current = cookStartedAt;
     readyRef.current = ready;
   }, [cookStartedAt, ready]);
-  /** Current visit: which one, when it started (`performance.now()`), when he was served. */
-  const visitRef = useRef({ index: 0, start: 0, servedU: null as number | null, waiting: false, orderAt: null as number | null });
+  /** One slot per chair; `servedU` is when the customer was served (seconds into the visit). */
+  const slotsRef = useRef<Slot[]>(CHAIRS.map(() => ({ kind: 'boy', start: null, servedU: null, waiting: false })));
+  /** Chef's last order reaction (`performance.now()`), any customer. */
+  const orderAtRef = useRef<number | null>(null);
+  const anyWaitingRef = useRef(false);
   const doorRef = useRef<HTMLSpanElement>(null);
-  const boyRef = useRef<HTMLSpanElement>(null);
-  const bubbleRef = useRef<HTMLSpanElement>(null);
-  const tailRef = useRef<SVGPathElement>(null);
+  const guestRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const bubbleRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const tailRefs = useRef<Array<SVGPathElement | null>>([]);
   const sceneRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    visitRef.current.start = performance.now();
+    let nextArrival = performance.now() + FIRST_GUEST_DELAY * 1000;
     let raf = 0;
     const tick = (now: number) => {
-      const visit = visitRef.current;
-      let u = (now - visit.start) / 1000;
-      if (u >= visitEndAt(visit.index, visit.servedU)) {
-        visit.index = (visit.index + 1) % VISIT_COUNT;
-        visit.start = now;
-        visit.servedU = null;
-        u = 0;
+      const slots = slotsRef.current;
+      // Arrival due: a random customer takes a random free chair; with both chairs taken nobody comes.
+      if (now >= nextArrival) {
+        const free = CHAIRS.filter((i) => slots[i].start === null);
+        if (free.length) {
+          const sl = slots[free[Math.floor(Math.random() * free.length)]];
+          sl.kind = GUEST_KINDS[Math.floor(Math.random() * GUEST_KINDS.length)];
+          sl.start = now;
+          sl.servedU = null;
+          sl.waiting = false;
+        }
+        nextArrival = now + nextGuestDelay(rateRef.current, Math.random()) * 1000;
       }
-      const frame = visitFrameAt(visit.index, u, visit.servedU);
-      if (visit.waiting !== frame.waiting) waitingChangeRef.current?.(frame.waiting);
-      if (frame.waiting && !visit.waiting) visit.orderAt = now;
-      visit.waiting = frame.waiting;
+
+      let door = 0;
+      let anyWaiting = false;
+      slots.forEach((sl, i) => {
+        if (sl.start !== null && (now - sl.start) / 1000 >= visitEndAt(i, sl.servedU)) sl.start = null;
+        const frame = sl.start === null ? null : visitFrameAt(i, (now - sl.start) / 1000, sl.servedU);
+        if (frame) door = Math.max(door, frame.door);
+        const waiting = !!frame?.waiting;
+        if (waiting && !sl.waiting) orderAtRef.current = now;
+        sl.waiting = waiting;
+        anyWaiting ||= waiting;
+
+        const el = guestRefs.current[i];
+        if (el) {
+          const b = frame?.boy;
+          el.dataset.waiting = String(waiting);
+          if (b) {
+            el.style.display = 'block';
+            el.dataset.kind = sl.kind;
+            el.style.left = pctX(b.x);
+            el.style.top = pctY(b.y);
+            el.style.opacity = String(b.opacity);
+            el.style.zIndex = String(BOY_Z[b.layer]);
+            el.style.clipPath = b.layer === 'right' ? FRONT_SEAT_CLIP : '';
+            el.style.backgroundPosition = `${(b.col * 100) / 3}% ${(b.row * 100) / 3}%`;
+            el.style.pointerEvents = waiting ? 'auto' : 'none';
+            el.style.cursor = waiting ? 'pointer' : '';
+          } else {
+            el.style.display = 'none';
+          }
+        }
+        const bubble = bubbleRefs.current[i];
+        if (bubble) {
+          const o = frame?.bubble;
+          if (o) {
+            bubble.style.display = 'block';
+            bubble.style.left = pctX(o.x - BUBBLE_SIZE / 2);
+            bubble.style.top = pctY(o.y - BUBBLE_SIZE / 2);
+            bubble.style.transform = `scale(${o.scale})`;
+            tailRefs.current[i]?.setAttribute('transform', `rotate(${o.tail} 52 52)`);
+          } else {
+            bubble.style.display = 'none';
+          }
+        }
+      });
+      if (anyWaiting !== anyWaitingRef.current) {
+        anyWaitingRef.current = anyWaiting;
+        waitingChangeRef.current?.(anyWaiting);
+      }
+
       const chef = sceneRef.current?.querySelector<HTMLElement>('.gs-chef__sprite');
       if (chef) {
         const cookAt = cookRef.current;
-        const orderAt = visit.orderAt;
+        const orderAt = orderAtRef.current;
         const c = chefCellAt(cookAt === null ? null : (now - cookAt) / 1000, orderAt === null ? null : (now - orderAt) / 1000);
         chef.dataset.sheet = c.sheet;
         chef.style.backgroundPosition = `${(c.col * 100) / 3}% ${(c.row * 100) / 2}%`;
         chef.style.scale = c.flip ? '-1 1' : '';
         chef.style.translate = `${((CHEF_TO_TABLE.x * c.step) / CHEF.w) * 100}% ${((CHEF_TO_TABLE.y * c.step) / CHEF.h) * 100}%`;
       }
-      const door = doorRef.current;
-      const boy = boyRef.current;
-      if (door) door.style.backgroundPositionX = `${(frame.door * 100) / 3}%`;
-      if (boy) {
-        if (frame.boy) {
-          const b = frame.boy;
-          boy.style.display = 'block';
-          boy.style.left = pctX(b.x);
-          boy.style.top = pctY(b.y);
-          boy.style.opacity = String(b.opacity);
-          boy.style.zIndex = String(BOY_Z[b.layer]);
-          boy.style.clipPath = b.layer === 'right' ? FRONT_SEAT_CLIP : '';
-          boy.style.backgroundPosition = `${(b.col * 100) / 3}% ${(b.row * 100) / 3}%`;
-          boy.style.pointerEvents = frame.waiting ? 'auto' : 'none';
-          boy.style.cursor = frame.waiting ? 'pointer' : '';
-        } else {
-          boy.style.display = 'none';
-        }
-      }
-      const bubble = bubbleRef.current;
-      if (bubble) {
-        if (frame.bubble) {
-          const o = frame.bubble;
-          bubble.style.display = 'block';
-          bubble.style.left = pctX(o.x - BUBBLE_SIZE / 2);
-          bubble.style.top = pctY(o.y - BUBBLE_SIZE / 2);
-          bubble.style.transform = `scale(${o.scale})`;
-          tailRef.current?.setAttribute('transform', `rotate(${o.tail} 52 52)`);
-        } else {
-          bubble.style.display = 'none';
-        }
-      }
+      if (doorRef.current) doorRef.current.style.backgroundPositionX = `${(door * 100) / 3}%`;
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  /** Tap on the waiting boy: serve him if a dish is ready, otherwise shake the order bubble. */
-  const handleBoyTap = () => {
-    const visit = visitRef.current;
-    if (!visit.waiting) return;
+  /** Tap on a waiting customer: serve if a dish is ready, otherwise shake that customer's order bubble. */
+  const handleGuestTap = (i: number) => {
+    const sl = slotsRef.current[i];
+    if (!sl.waiting || sl.start === null) return;
     if (readyRef.current > 0) {
-      visit.servedU = (performance.now() - visit.start) / 1000;
-      visit.waiting = false;
-      waitingChangeRef.current?.(false);
+      sl.servedU = (performance.now() - sl.start) / 1000;
+      sl.waiting = false;
       onServe();
       return;
     }
-    bubbleRef.current?.animate(
+    bubbleRefs.current[i]?.animate(
       [{ translate: '0 0' }, { translate: '-5px 0' }, { translate: '5px 0' }, { translate: '0 0' }],
       { duration: 260 },
     );
@@ -200,13 +235,18 @@ export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe, onW
           draggable={false}
         />
       ))}
-      <span
-        ref={boyRef}
-        className="gs-scene__boy"
-        style={{ width: pctX(BOY_W), height: pctY(BOY_H), display: 'none' }}
-        aria-hidden
-        onPointerDown={handleBoyTap}
-      />
+      {CHAIRS.map((i) => (
+        <span
+          key={i}
+          ref={(el) => {
+            guestRefs.current[i] = el;
+          }}
+          className="gs-scene__boy"
+          style={{ width: pctX(BOY_W), height: pctY(BOY_H), display: 'none' }}
+          aria-hidden
+          onPointerDown={() => handleGuestTap(i)}
+        />
+      ))}
       {COUNTER_TRAYS.slice(0, ready).map(([x, y]) => (
         <img
           key={`${x}-${y}`}
@@ -217,24 +257,31 @@ export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe, onW
           draggable={false}
         />
       ))}
-      {/* Order bubble: what the seated customer wants, shown while he raises his hand. */}
-      <span
-        ref={bubbleRef}
-        className="gs-scene__bubble"
-        style={{ width: pctX(BUBBLE_SIZE), height: pctY(BUBBLE_SIZE), display: 'none' }}
-        aria-hidden
-      >
-        <svg viewBox="0 0 104 104" width="100%" height="100%">
-          <path
-            ref={tailRef}
-            d="M52 4a46 46 0 1 1-18 88.4L50 118 30 89A46 46 0 0 1 52 4z"
-            fill="rgba(255, 248, 232, 0.92)"
-            stroke="#5a3418"
-            strokeWidth="3"
-          />
-          <image href="/figma/food-cheburek.png" x="20" y="30" width="64" height="43" />
-        </svg>
-      </span>
+      {/* Order bubbles, one per chair: what the seated customer wants, shown while the hand is up. */}
+      {CHAIRS.map((i) => (
+        <span
+          key={i}
+          ref={(el) => {
+            bubbleRefs.current[i] = el;
+          }}
+          className="gs-scene__bubble"
+          style={{ width: pctX(BUBBLE_SIZE), height: pctY(BUBBLE_SIZE), display: 'none' }}
+          aria-hidden
+        >
+          <svg viewBox="0 0 104 104" width="100%" height="100%">
+            <path
+              ref={(el) => {
+                tailRefs.current[i] = el;
+              }}
+              d="M52 4a46 46 0 1 1-18 88.4L50 118 30 89A46 46 0 0 1 52 4z"
+              fill="rgba(255, 248, 232, 0.92)"
+              stroke="#5a3418"
+              strokeWidth="3"
+            />
+            <image href="/figma/food-cheburek.png" x="20" y="30" width="64" height="43" />
+          </svg>
+        </span>
+      ))}
       {renderChef(boxStyle(CHEF))}
     </div>
   );

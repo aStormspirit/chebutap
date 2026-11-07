@@ -31,7 +31,26 @@ export const UPGRADES: UpgradeDef[] = [
     effectPerLevel: 0.2,
     icon: '🔋',
   },
+  {
+    id: 'ads',
+    name: 'Реклама',
+    description: '+25% гостей в минуту',
+    baseCost: 30,
+    costFactor: 1.6,
+    maxLevel: 20,
+    effectPerLevel: 0.25,
+    icon: '📣',
+  },
 ];
+
+/** Average customers per minute before the «Реклама» multiplier. */
+export const BASE_GUESTS_PER_MINUTE = 2;
+
+/** Guest-rate multiplier: ×1 at level 0, +`effectPerLevel` for each «Реклама» level. */
+export function guestRateMultiplier(upgradeLevels: Record<string, number>): number {
+  const ads = UPGRADES.find((u) => u.id === 'ads');
+  return 1 + (upgradeLevels.ads ?? 0) * (ads?.effectPerLevel ?? 0);
+}
 
 /** Current task list; new tasks are added here as the game grows. Rewards are diamonds. */
 export const TASKS: TaskDef[] = [

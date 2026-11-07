@@ -4,7 +4,7 @@ import { GameNav } from '../components/GameNav';
 import { RestaurantScene } from '../components/RestaurantScene';
 import { Tutorial } from '../components/Tutorial';
 import { WalletConnect } from '../components/WalletConnect';
-import { FOODS } from '../data/content';
+import { BASE_GUESTS_PER_MINUTE, FOODS, guestRateMultiplier } from '../data/content';
 import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';
 import type { Kitchen } from '../store/kitchenStore';
@@ -65,6 +65,7 @@ export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, on
         ready={ready}
         onServe={handleServe}
         onWaitingChange={setWaiting}
+        guestsPerMinute={BASE_GUESTS_PER_MINUTE * guestRateMultiplier(state.upgradeLevels)}
         renderChef={(style) => (
           <span className="gs-chef" style={style} aria-hidden>
             <span className="gs-chef__sprite" />

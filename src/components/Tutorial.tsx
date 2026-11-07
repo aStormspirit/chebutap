@@ -20,7 +20,7 @@ const STEPS: Record<Step, { text: string; hint?: string; target?: string; anchor
     target: '[data-tutorial="food-nav"]',
   },
   cook: { text: 'Жми «Готовить» — я быстро слеплю чебурек!', hint: 'нажми «Готовить»', target: '[data-tutorial="cook"]', anchor: '.food-sheet__panel' },
-  serve: { text: 'Чебурек готов! Нажми на гостя, чтобы подать.', hint: 'нажми на гостя', target: '.gs-scene__boy', noDim: true },
+  serve: { text: 'Чебурек готов! Нажми на гостя, чтобы подать.', hint: 'нажми на гостя', target: '.gs-scene__boy[data-waiting="true"]', noDim: true },
   done: { text: 'Отлично, босс! Так и работаем 👍' },
 };
 

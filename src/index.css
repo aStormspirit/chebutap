@@ -1344,6 +1344,11 @@ ul {
   background: url(/figma/restaurant/customer-boy.webp?v=3) 0 0 / 400% 400% no-repeat;
 }
 
+/* Girl customer: same 4 × 4 layout as the boy (walk in, walk out, sit front, sit back). */
+.gs-scene__boy[data-kind='girl'] {
+  background-image: url(/figma/restaurant/customer-girl.webp?v=1);
+}
+
 /* Ready dish in a serving-counter tray. */
 .gs-scene__dish {
   position: absolute;
