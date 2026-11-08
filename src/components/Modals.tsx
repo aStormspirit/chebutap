@@ -1,5 +1,7 @@
 import { BOOSTS, INGREDIENTS, SHOP_PACKS } from '../data/content';
+import { useSyncExternalStore } from 'react';
 import { formatNumber } from '../lib/format';
+import { isMusicEnabled, setMusicEnabled, subscribeMusic } from '../lib/music';
 import type { GameStore } from '../store/gameStore';
 import type { ModalId } from '../types/game';
 import { CoinIcon, DiamondIcon } from './icons';
@@ -11,6 +13,7 @@ type Props = {
 };
 
 export function Modals({ modal, store, onClose }: Props) {
+  const musicOn = useSyncExternalStore(subscribeMusic, isMusicEnabled);
   if (!modal) return null;
   const { state, activateBoost, buyShopPack, buyIngredient, addHard, resetProgress } = store;
 
@@ -157,6 +160,20 @@ export function Modals({ modal, store, onClose }: Props) {
           <>
             <h3 className="modal__title">Настройки</h3>
             <ul className="card-list">
+              <li className="game-card">
+                <div className="game-card__main">
+                  <strong>Музыка</strong>
+                  <span className="game-card__meta">Джаз в кафе</span>
+                </div>
+                <button
+                  type="button"
+                  className={`btn ${musicOn ? 'btn--green' : 'btn--wood'}`}
+                  aria-pressed={musicOn}
+                  onClick={() => setMusicEnabled(!musicOn)}
+                >
+                  {musicOn ? 'Вкл' : 'Выкл'}
+                </button>
+              </li>
               <li className="game-card">
                 <div className="game-card__main">
                   <strong>Вибрация</strong>
