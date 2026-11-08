@@ -961,8 +961,17 @@ ul {
   min-height: 0;
   z-index: 2;
   overflow-y: auto;
+  position: relative;
   padding: calc(var(--safe-top) + 14px) var(--gs-gutter) 18px;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Wooden × in the top-right corner of a tab: back to the café screen. */
+.gs-panel__close {
+  position: absolute;
+  z-index: 1;
+  top: calc(var(--safe-top) + 10px);
+  right: var(--gs-gutter);
 }
 
 .panel-screen {
@@ -1346,7 +1355,7 @@ ul {
 
 /* Girl customer: same 4 × 4 layout as the boy (walk in, walk out, sit front, sit back). */
 .gs-scene__boy[data-kind='girl'] {
-  background-image: url(/figma/restaurant/customer-girl.webp?v=1);
+  background-image: url(/figma/restaurant/customer-girl.webp?v=5);
 }
 
 /* Ready dish in a serving-counter tray. */

@@ -2,33 +2,23 @@ import type { BuildingDef, TaskDef, UpgradeDef } from '../types/game';
 
 export const UPGRADES: UpgradeDef[] = [
   {
-    id: 'tap',
-    name: 'Сила тапа',
-    description: '+1 монета за тап',
-    baseCost: 100,
-    costFactor: 1.45,
-    maxLevel: 50,
-    effectPerLevel: 1,
-    icon: '👆',
-  },
-  {
     id: 'energy',
     name: 'Запас энергии',
-    description: '+50 к максимуму энергии',
+    description: '+10 к максимуму энергии',
     baseCost: 250,
     costFactor: 1.5,
     maxLevel: 30,
-    effectPerLevel: 50,
+    effectPerLevel: 10,
     icon: '⚡',
   },
   {
     id: 'regen',
     name: 'Восстановление',
-    description: '+0.2 энергии/сек',
+    description: '−1 сек к восстановлению',
     baseCost: 400,
     costFactor: 1.55,
     maxLevel: 25,
-    effectPerLevel: 0.2,
+    effectPerLevel: 1,
     icon: '🔋',
   },
   {

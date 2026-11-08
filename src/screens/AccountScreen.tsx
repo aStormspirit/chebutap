@@ -68,8 +68,8 @@ export function AccountScreen({ store, onSettings, onShop }: Props) {
 
       <ul className="stats-list">
         <li>
-          <span>Всего тапов</span>
-          <strong>{formatNumber(state.totalTaps)}</strong>
+          <span>Гостей обслужено</span>
+          <strong>{formatNumber(state.totalServed)}</strong>
         </li>
         <li>
           <span>Всего заработано</span>
@@ -84,10 +84,6 @@ export function AccountScreen({ store, onSettings, onShop }: Props) {
             <DiamondIcon className="inline-icon" />
             {formatNumber(state.hard)}
           </strong>
-        </li>
-        <li>
-          <span>Сила тапа</span>
-          <strong>{state.tapPower}</strong>
         </li>
       </ul>
 

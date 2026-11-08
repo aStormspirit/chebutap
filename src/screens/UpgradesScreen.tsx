@@ -11,7 +11,7 @@ export function UpgradesScreen({ store }: Props) {
   return (
     <section className="panel-screen">
       <h2 className="panel-title">Улучшения</h2>
-      <p className="panel-sub">Сильнее тап — больше монет</p>
+      <p className="panel-sub">Больше энергии — больше блюд</p>
       <ul className="card-list">
         {UPGRADES.map((u) => {
           const level = state.upgradeLevels[u.id] ?? 0;

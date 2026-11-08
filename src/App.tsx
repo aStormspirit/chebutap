@@ -79,6 +79,20 @@ export default function App() {
       <div className="game-screen game-screen--panel">
         <div className="game-screen__bg" aria-hidden />
         <main className="gs-panel">
+          <button
+            type="button"
+            className="gs-square gs-panel__close"
+            onClick={() => {
+              setFoodOpen(false);
+              setTab('earn');
+            }}
+            aria-label="Закрыть"
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden>
+              <path d="M3 3L15 15M15 3L3 15" stroke="#4a2208" strokeWidth="5" strokeLinecap="round" />
+              <path d="M3 3L15 15M15 3L3 15" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" />
+            </svg>
+          </button>
           {tab === 'tasks' && <TasksScreen store={store} />}
           {tab === 'town' && <TownScreen store={store} />}
           {tab === 'upgrades' && <UpgradesScreen store={store} />}

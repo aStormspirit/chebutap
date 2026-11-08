@@ -7,8 +7,11 @@ import type { GameState } from '../types/game';
 
 const BASE_MAX_ENERGY = 100;
 const BASE_TAP = 1;
-/** Energy per second: +1 every 5 s. */
-const BASE_REGEN = 0.2;
+/** Seconds to restore 1 energy; each «Восстановление» level takes 1 s off. */
+const BASE_REGEN_SECONDS = 60;
+const REGEN_STEP_SECONDS = 1;
+/** Energy per second at level 0: +1 a minute. */
+const BASE_REGEN = 1 / BASE_REGEN_SECONDS;
 
 function createInitialState(): GameState {
   return {
@@ -49,8 +52,8 @@ function deriveStats(state: GameState): Pick<GameState, 'tapPower' | 'maxEnergy'
   const regenLvl = state.upgradeLevels.regen ?? 0;
   return {
     tapPower: BASE_TAP + tapLvl,
-    maxEnergy: BASE_MAX_ENERGY + energyLvl * 50,
-    energyRegen: BASE_REGEN + regenLvl * 0.2,
+    maxEnergy: BASE_MAX_ENERGY + energyLvl * 10,
+    energyRegen: 1 / Math.max(1, BASE_REGEN_SECONDS - regenLvl * REGEN_STEP_SECONDS),
   };
 }
 
