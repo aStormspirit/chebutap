@@ -18,6 +18,8 @@ type Props = {
   onTabChange: (tab: TabId) => void;
   onBoost: () => void;
   onShop: () => void;
+  /** Diamond chip: diamond, coin and energy packs. */
+  onGems: () => void;
   onSettings: () => void;
   /** «Еда» menu above the nav, toggled from the nav button. */
   foodOpen: boolean;
@@ -30,7 +32,7 @@ type Props = {
  * Behind the UI sits the restaurant scene; the chef cooks when a dish is ordered from
  * the «Еда» menu, which costs energy.
  */
-export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, onShop, onSettings, foodOpen, onFoodClose }: Props) {
+export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, onShop, onGems, onSettings, foodOpen, onFoodClose }: Props) {
   const { state, cookDish, sellDish } = store;
   const { cooking, ready, guests, counterFull, startCooking, serve } = kitchen;
   /** Customer waits with a raised hand; served count — both only drive the tutorial. */
@@ -76,7 +78,7 @@ export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, on
       />
 
       <header className="gs-top">
-        <button type="button" className="gs-chip gs-chip--gem" onClick={onShop} aria-label="Алмазы: пополнить">
+        <button type="button" className="gs-chip gs-chip--gem" onClick={onGems} aria-label="Алмазы: пополнить">
           <img src="/figma/game-gem.svg" width={22} height={18} alt="" />
           <span className="gs-chip__value">{formatNumber(state.hard)}</span>
           <span className="gs-chip__plus" aria-hidden>+</span>

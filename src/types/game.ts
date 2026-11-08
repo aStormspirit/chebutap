@@ -1,6 +1,6 @@
 export type TabId = 'earn' | 'tasks' | 'town' | 'upgrades' | 'account';
 
-export type ModalId = 'boost' | 'shop' | 'settings' | null;
+export type ModalId = 'boost' | 'shop' | 'gems' | 'settings' | null;
 
 export interface UpgradeDef {
   id: string;

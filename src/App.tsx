@@ -67,6 +67,7 @@ export default function App() {
           onFoodClose={() => setFoodOpen(false)}
           onBoost={() => setModal('boost')}
           onShop={() => setModal('shop')}
+          onGems={() => setModal('gems')}
           onSettings={() => setModal('settings')}
         />
         <Modals modal={modal} store={store} onClose={() => setModal(null)} />

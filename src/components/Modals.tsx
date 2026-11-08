@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { BOOSTS, INGREDIENTS, SHOP_PACKS } from '../data/content';
 import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';
@@ -12,8 +11,6 @@ type Props = {
 };
 
 export function Modals({ modal, store, onClose }: Props) {
-  /** Shop tab: products for cooking (default) or the coin/diamond/energy packs. */
-  const [shopTab, setShopTab] = useState<'products' | 'packs'>('products');
   if (!modal) return null;
   const { state, activateBoost, buyShopPack, buyIngredient, addHard, resetProgress } = store;
 
@@ -75,30 +72,7 @@ export function Modals({ modal, store, onClose }: Props) {
         {modal === 'shop' && (
           <>
             <h3 className="modal__title">Магазин</h3>
-            <p className="panel-sub">
-              {shopTab === 'products' ? 'Покупайте продукты — из них повар готовит блюда' : 'Монеты, алмазы и энергия'}
-            </p>
-            <div className="shop-tabs" role="tablist">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={shopTab === 'products'}
-                className={`shop-tab${shopTab === 'products' ? ' shop-tab--active' : ''}`}
-                onClick={() => setShopTab('products')}
-              >
-                Продукты
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={shopTab === 'packs'}
-                className={`shop-tab${shopTab === 'packs' ? ' shop-tab--active' : ''}`}
-                onClick={() => setShopTab('packs')}
-              >
-                Монеты и алмазы
-              </button>
-            </div>
-            {shopTab === 'products' && (
+            <p className="panel-sub">Покупайте продукты — из них повар готовит блюда</p>
               <ul className="card-list">
                 {INGREDIENTS.map((ing) => (
                   <li key={ing.id} className="game-card">
@@ -122,8 +96,13 @@ export function Modals({ modal, store, onClose }: Props) {
                   </li>
                 ))}
               </ul>
-            )}
-            {shopTab === 'packs' && (
+          </>
+        )}
+
+        {modal === 'gems' && (
+          <>
+            <h3 className="modal__title">Алмазы и монеты</h3>
+            <p className="panel-sub">Пополните алмазы, монеты и энергию</p>
             <ul className="card-list">
               {SHOP_PACKS.map((pack) => {
                 const can =
@@ -171,7 +150,6 @@ export function Modals({ modal, store, onClose }: Props) {
                 </button>
               </li>
             </ul>
-            )}
           </>
         )}
 
