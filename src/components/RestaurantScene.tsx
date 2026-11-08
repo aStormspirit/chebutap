@@ -47,7 +47,7 @@ const BOY_Z = { left: 3, right: 6, walk: 8 } as const;
 const FRONT_SEAT_CLIP = 'polygon(0 0, 100% 0, 100% 100%, 66% 100%, 0 57%)';
 
 /** Bump when scene images are redrawn under the same names, so browsers drop cached copies. */
-const ASSET_VERSION = 3;
+const ASSET_VERSION = 4;
 
 const DOOR: Box = { x: 41, y: 294, w: 186, h: 332 };
 /**
