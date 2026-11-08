@@ -1,10 +1,9 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode, type RefObject } from 'react';
 import {
   BOY_H,
   BOY_W,
   BUBBLE_SIZE,
   COUNTER_TRAYS,
-  FIRST_GUEST_DELAY,
   GUEST_KINDS,
   TABLE,
   VISIT_COUNT,
@@ -12,10 +11,9 @@ import {
   nextGuestDelay,
   visitEndAt,
   visitFrameAt,
-  type GuestKind,
 } from './customerTimeline';
 import { FOODS } from '../data/content';
-import type { CookingOrder } from '../store/kitchenStore';
+import type { CookingOrder, Guests } from '../store/kitchenStore';
 
 /** Scene size in the Figma frame «Ресторан — слои»; item boxes below are in these units. */
 const SCENE_W = 768;
@@ -78,19 +76,18 @@ type Props = {
   cooking: CookingOrder | null;
   /** Ready dishes (food ids) standing on the serving counter. */
   ready: string[];
-  /** Customer was served: take one dish off the counter. */
-  onServe: () => void;
+  /** Waiting customer on chair `i` was served: he takes one dish off the counter. */
+  onServe: (i: number) => void;
   /** Some seated customer starts waiting for an order / nobody waits any more. */
   onWaitingChange?: (waiting: boolean) => void;
   /** Average customers per minute (base rate × «Реклама» multiplier). */
   guestsPerMinute: number;
+  /** Customers at the table; kept by the kitchen so they survive tab switches and restarts. */
+  guests: RefObject<Guests>;
 };
 
 /** Dish icon size on the counter, scene units. */
 const DISH = { w: 52, h: 35 };
-
-/** One chair: who sits there and when the visit started (`performance.now()`, null = free). */
-type Slot = { kind: GuestKind; start: number | null; servedU: number | null; waiting: boolean };
 
 const CHAIRS = Array.from({ length: VISIT_COUNT }, (_, i) => i);
 
@@ -98,7 +95,7 @@ const CHAIRS = Array.from({ length: VISIT_COUNT }, (_, i) => i);
  * Restaurant background for the Earn screen: empty room, interior items, the door,
  * customers (boy or girl) who come in at random times, sit at the table and leave, and the chef who cooks.
  */
-export function RestaurantScene({ renderChef, cooking, ready, onServe, onWaitingChange, guestsPerMinute }: Props) {
+export function RestaurantScene({ renderChef, cooking, ready, onServe, onWaitingChange, guestsPerMinute, guests }: Props) {
   const cookRef = useRef(cooking);
   const waitingChangeRef = useRef(onWaitingChange);
   const rateRef = useRef(guestsPerMinute);
@@ -111,9 +108,7 @@ export function RestaurantScene({ renderChef, cooking, ready, onServe, onWaiting
     cookRef.current = cooking;
     readyRef.current = ready.length;
   }, [cooking, ready]);
-  /** One slot per chair; `servedU` is when the customer was served (seconds into the visit). */
-  const slotsRef = useRef<Slot[]>(CHAIRS.map(() => ({ kind: 'boy', start: null, servedU: null, waiting: false })));
-  /** Chef's last order reaction (`performance.now()`), any customer. */
+  /** Chef's last order reaction (`Date.now()`), any customer. */
   const orderAtRef = useRef<number | null>(null);
   const anyWaitingRef = useRef(false);
   const doorRef = useRef<HTMLSpanElement>(null);
@@ -124,12 +119,14 @@ export function RestaurantScene({ renderChef, cooking, ready, onServe, onWaiting
 
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    let nextArrival = performance.now() + FIRST_GUEST_DELAY * 1000;
     let raf = 0;
-    const tick = (now: number) => {
-      const slots = slotsRef.current;
+    // Wall-clock time, so saved visits and cooking continue correctly after a restart.
+    const tick = () => {
+      const now = Date.now();
+      const g = guests.current;
+      const slots = g.slots;
       // Arrival due: a random customer takes a random free chair; with both chairs taken nobody comes.
-      if (now >= nextArrival) {
+      if (now >= g.nextArrival) {
         const free = CHAIRS.filter((i) => slots[i].start === null);
         if (free.length) {
           const sl = slots[free[Math.floor(Math.random() * free.length)]];
@@ -138,7 +135,7 @@ export function RestaurantScene({ renderChef, cooking, ready, onServe, onWaiting
           sl.servedU = null;
           sl.waiting = false;
         }
-        nextArrival = now + nextGuestDelay(rateRef.current, Math.random()) * 1000;
+        g.nextArrival = now + nextGuestDelay(rateRef.current, Math.random()) * 1000;
       }
 
       let door = 0;
@@ -209,16 +206,14 @@ export function RestaurantScene({ renderChef, cooking, ready, onServe, onWaiting
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [guests]);
 
   /** Tap on a waiting customer: serve if a dish is ready, otherwise shake that customer's order bubble. */
   const handleGuestTap = (i: number) => {
-    const sl = slotsRef.current[i];
+    const sl = guests.current.slots[i];
     if (!sl.waiting || sl.start === null) return;
     if (readyRef.current > 0) {
-      sl.servedU = (performance.now() - sl.start) / 1000;
-      sl.waiting = false;
-      onServe();
+      onServe(i);
       return;
     }
     bubbleRefs.current[i]?.animate(

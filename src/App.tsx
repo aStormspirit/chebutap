@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { WebApp } from './lib/telegram';
 import { trackVisit } from './lib/trackVisit';
+import { startCloudSync } from './lib/cloudSave';
 import { useEnergyReminder } from './lib/energyReminder';
 import { GameNav } from './components/GameNav';
 import { Modals } from './components/Modals';
@@ -28,6 +29,8 @@ export default function App() {
     setFoodOpen(false);
   }
   useEnergyReminder(store.state);
+  // After the stores' effects, so on hide the stores write localStorage before the upload reads it.
+  useEffect(() => startCloudSync(), []);
 
   /** The «Еда» nav button opens the food menu over the restaurant; a second press closes it. */
   const handleTab = (next: TabId) => {

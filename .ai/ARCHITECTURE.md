@@ -156,6 +156,12 @@ worktree — `.worktrees/` (не версионируется). Правила �
 - Поток: `App.tsx` → `trackVisit()` (`src/lib/trackVisit.ts`) → POST `{ initData }` на `/functions/v1/track-visit` → проверка HMAC токеном бота (секрет `TELEGRAM_BOT_TOKEN`, `auth_date` не старше 24 ч) → RPC `track_player_visit` (upsert в `public.players`).
 - URL функции можно переопределить `VITE_TRACK_VISIT_URL`. Секреты (пароль БД, токен бота, service role) — только в Supabase, не в репозитории и не в клиенте.
 
+## Облачное сохранение — Supabase (2026-11-08)
+
+- Источник правды в клиенте — localStorage: `chebutap-save-v1` (игра), `chebutap.kitchen.v1` (готовка, стойка, гости за столом, время — `Date.now()`), `chebutap.tutorial.v1`. `src/lib/cloudSave.ts` переносит эти ключи в облако и обратно; метаданные устройства — `chebutap.cloud.v1` (`owner` — Telegram id, `rev`, `lastSaveId`, `reset`).
+- Старт: `main.tsx` ждёт `prepareCloudSave()` (до 3 с), затем рендерит. Синхронизация — `startCloudSync()` в `App.tsx`: раз в 10 с при видимой игре и при сворачивании (`keepalive`).
+- Сервер: Edge Function `save-progress` (`load` / `save`) → RPC `load_player_save`, `store_player_save` (оптимистичная блокировка по `players.save_rev`; `customers_served` = max, при `reset` — значение из сейва). При конфликте клиент пишет облачный сейв в localStorage, замораживает локальные записи (`isLocalSaveFrozen`) и перезагружается.
+
 ## Напоминание «энергия пополнилась» (2026-11-07)
 
 - Клиент (`src/lib/energyReminder.ts`) при уходе из игры шлёт в `energy-schedule` секунды до полной энергии, при возвращении — `null`. Время полной энергии хранит `players.energy_full_at` (считает сервер).

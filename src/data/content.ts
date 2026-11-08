@@ -112,6 +112,10 @@ export const BUILDINGS: BuildingDef[] = [
 export const STORAGE_KEY = 'chebutap-save-v1';
 /** Set to 'done' once the onboarding is finished; cleared by the progress reset. */
 export const TUTORIAL_STORAGE_KEY = 'chebutap.tutorial.v1';
+/** Kitchen and café scene: dish being cooked, counter, customers at the table (`useKitchen`). */
+export const KITCHEN_STORAGE_KEY = 'chebutap.kitchen.v1';
+/** Cloud save bookkeeping on this device (`src/lib/cloudSave.ts`). */
+export const CLOUD_META_KEY = 'chebutap.cloud.v1';
 
 export const BOOSTS = [
   {

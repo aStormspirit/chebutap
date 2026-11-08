@@ -11,3 +11,7 @@ verify_jwt = false
 # Вызывает pg_cron; функция проверяет заголовок x-cron-secret.
 [functions.notify-energy]
 verify_jwt = false
+
+# Подпись Telegram initData проверяет сама функция.
+[functions.save-progress]
+verify_jwt = false

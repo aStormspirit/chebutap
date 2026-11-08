@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { BUILDINGS, INGREDIENTS, STARTING_PANTRY, STORAGE_KEY, TASKS, TUTORIAL_STORAGE_KEY, UPGRADES, hasIngredients } from '../data/content';
+import { BUILDINGS, INGREDIENTS, KITCHEN_STORAGE_KEY, STARTING_PANTRY, STORAGE_KEY, TASKS, TUTORIAL_STORAGE_KEY, UPGRADES, hasIngredients } from '../data/content';
 import type { FoodDef } from '../data/content';
+import { isLocalSaveFrozen, markCloudReset } from '../lib/cloudSave';
 import { upgradeCost } from '../lib/format';
 import type { GameState } from '../types/game';
 
@@ -102,7 +103,7 @@ export function useGameStore() {
     let savedState: GameState | null = null;
     const flushSave = () => {
       const snapshot = committedState.current;
-      if (snapshot === savedState) return;
+      if (snapshot === savedState || isLocalSaveFrozen()) return;
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
         savedState = snapshot;
@@ -330,10 +331,12 @@ export function useGameStore() {
     try {
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(TUTORIAL_STORAGE_KEY);
+      localStorage.removeItem(KITCHEN_STORAGE_KEY);
     } catch {
       // Reset in memory even when storage is unavailable; saving will retry.
     }
     setState(createInitialState());
+    markCloudReset();
     setResetId((n) => n + 1);
   }, []);
 

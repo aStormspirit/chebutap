@@ -32,14 +32,14 @@ type Props = {
  */
 export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, onShop, onSettings, foodOpen, onFoodClose }: Props) {
   const { state, cookDish, sellDish } = store;
-  const { cooking, ready, counterFull, startCooking, serve } = kitchen;
+  const { cooking, ready, guests, counterFull, startCooking, serve } = kitchen;
   /** Customer waits with a raised hand; served count — both only drive the tutorial. */
   const [waiting, setWaiting] = useState(false);
   const [served, setServed] = useState(0);
-  const handleServe = useCallback(() => {
+  const handleServe = useCallback((chair: number) => {
     // The customer takes the oldest dish on the counter and pays its price.
     const food = FOODS.find((f) => f.id === ready[0]) ?? FOODS[0];
-    serve();
+    serve(chair);
     sellDish(food.price);
     setServed((n) => n + 1);
   }, [ready, sellDish, serve]);
@@ -66,6 +66,7 @@ export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, on
         ready={ready}
         onServe={handleServe}
         onWaitingChange={setWaiting}
+        guests={guests}
         guestsPerMinute={BASE_GUESTS_PER_MINUTE * guestRateMultiplier(state.upgradeLevels)}
         renderChef={(style) => (
           <span className="gs-chef" style={style} aria-hidden>
