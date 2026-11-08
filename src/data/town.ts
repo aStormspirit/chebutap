@@ -25,15 +25,3 @@ export const TOWN_RESTAURANTS: TownRestaurant[] = [
 
 /** Низ спрайта ниже центра основания на эту долю ширины. */
 export const TOWN_BASE_OFFSET = 0.28;
-
-/** Прямые участки улиц и тротуаров для прогулок: [x1, y1, x2, y2] (design/town/walks.py). */
-export const TOWN_WALKS: { path: [number, number, number, number]; girl: boolean; sec: number }[] = [
-  { path: [832, 1034, 1904, 444], girl: false, sec: 26 },
-  { path: [1632, 1615, 2128, 1907], girl: true, sec: 14 },
-  { path: [2360, 987, 2848, 1273], girl: false, sec: 14 },
-  { path: [488, 1370, 968, 1652], girl: true, sec: 14 },
-  { path: [904, 2262, 1336, 2516], girl: false, sec: 13 },
-  { path: [2464, 538, 2888, 787], girl: true, sec: 12 },
-  { path: [1192, 1351, 1592, 1586], girl: false, sec: 12 },
-  { path: [0, 1054, 520, 768], girl: true, sec: 15 },
-];

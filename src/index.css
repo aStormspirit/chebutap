@@ -1699,63 +1699,6 @@ ul {
   pointer-events: none;
 }
 
-/* Passers-by: boy/girl sheets (4 × 4), row 0 walks down-right, row 1 walks up-left. */
-.town__walker {
-  position: absolute;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-  animation: town-walk linear infinite;
-}
-
-.town__walker-sprite {
-  position: absolute;
-  width: 36px;
-  height: 36px;
-  left: -18px;
-  top: -33px;
-  background: url(/figma/restaurant/customer-boy.webp?v=3) 0 0 / 400% 400% no-repeat;
-  animation-name: town-legs, town-face;
-  animation-timing-function: steps(4), step-end;
-  animation-iteration-count: infinite;
-}
-
-.town__walker-sprite--girl {
-  background-image: url(/figma/restaurant/customer-girl.webp?v=5);
-}
-
-@keyframes town-walk {
-  0%,
-  100% {
-    left: var(--x1);
-    top: var(--y1);
-  }
-  50% {
-    left: var(--x2);
-    top: var(--y2);
-  }
-}
-
-@keyframes town-legs {
-  from {
-    background-position-x: 0%;
-  }
-  to {
-    background-position-x: 133.333%;
-  }
-}
-
-@keyframes town-face {
-  0% {
-    background-position-y: var(--row-go);
-    transform: scaleX(var(--flip-go));
-  }
-  50% {
-    background-position-y: var(--row-back);
-    transform: scaleX(var(--flip-back));
-  }
-}
-
 .town__card {
   position: absolute;
   left: var(--gs-gutter);

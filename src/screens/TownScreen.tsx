@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
+import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import {
   TOWN_BASE_OFFSET,
   TOWN_MAP_CSS,
   TOWN_MAP_SIZE,
   TOWN_RESTAURANTS,
   TOWN_TILE,
-  TOWN_WALKS,
 } from '../data/town';
 
 type Props = { onOpenCafe: () => void };
@@ -13,11 +12,6 @@ type Props = { onOpenCafe: () => void };
 const K = TOWN_MAP_CSS / TOWN_MAP_SIZE;
 const TILES = TOWN_MAP_SIZE / TOWN_TILE;
 const TAP_SLOP = 8;
-
-/** Ряд спрайта и отражение для шага по вектору (dx, dy): ряд 0 — вниз-вправо, ряд 1 — вверх-влево (спиной). */
-function facing(dx: number, dy: number) {
-  return dy >= 0 ? { row: '0%', flip: dx < 0 ? -1 : 1 } : { row: '33.333%', flip: dx > 0 ? -1 : 1 };
-}
 
 export function TownScreen({ onOpenCafe }: Props) {
   const viewRef = useRef<HTMLDivElement>(null);
@@ -112,31 +106,6 @@ export function TownScreen({ onOpenCafe }: Props) {
                 draggable={false}
                 style={{ left: c * size, top: r * size, width: size + 0.5, height: size + 0.5 }}
               />
-            );
-          })}
-
-          {TOWN_WALKS.map(({ path: [x1, y1, x2, y2], girl, sec }, i) => {
-            const go = facing(x2 - x1, y2 - y1);
-            const back = facing(x1 - x2, y1 - y2);
-            const style = {
-              '--x1': `${x1 * K}px`,
-              '--y1': `${y1 * K}px`,
-              '--x2': `${x2 * K}px`,
-              '--y2': `${y2 * K}px`,
-              '--row-go': go.row,
-              '--flip-go': go.flip,
-              '--row-back': back.row,
-              '--flip-back': back.flip,
-              animationDuration: `${sec * 2}s`,
-              animationDelay: `${-i * 3.7}s`,
-            } as CSSProperties;
-            return (
-              <div key={i} className="town__walker" style={style}>
-                <div
-                  className={`town__walker-sprite${girl ? ' town__walker-sprite--girl' : ''}`}
-                  style={{ animationDuration: `0.7s, ${sec * 2}s`, animationDelay: `0s, ${-i * 3.7}s` }}
-                />
-              </div>
             );
           })}
 
