@@ -19,21 +19,21 @@
 
 ## Задача: кнопка × на вкладках (2026-11-08)
 
-- По просьбе пользователя (макет `design/tab-close-mockup-wood.png` утверждён): на вкладках «Задачи», «Город», «Улучшения», «Аккаунт» в правом верхнем углу деревянная кнопка × (стиль `gs-square`, как шестерёнка настроек) → экран кафе (`tab = 'earn'`, меню «Еда» закрыто). Изменены `src/App.tsx`, `src/index.css` (`.gs-panel` relative, `.gs-panel__close`). Превью: кнопка на всех 4 вкладках, возврат в кафе работает; lint (2 прежних предупреждения), build PASS. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- По просьбе пользователя (макет `design/tab-close-mockup-wood.png` утверждён): на вкладках «Задачи», «Город», «Улучшения», «Аккаунт» в правом верхнем углу деревянная кнопка × (стиль `gs-square`, как шестерёнка настроек) → экран кафе (`tab = 'earn'`, меню «Еда» закрыто). Изменены `src/App.tsx`, `src/index.css` (`.gs-panel` relative, `.gs-panel__close`). Превью: кнопка на всех 4 вкладках, возврат в кафе работает; lint (2 прежних предупреждения), build PASS. В коммите `f26e79b`, выкачено.
 
 ## Задача: статистика в аккаунте (2026-11-08)
 
-- По просьбе пользователя в `src/screens/AccountScreen.tsx` строка «Всего тапов» заменена на «Гостей обслужено» (`state.totalServed`), строка «Сила тапа» убрана. Поля `totalTaps`/`tapPower` в состоянии остались (не трогали). Lint/tsc PASS, превью: три строки. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- По просьбе пользователя в `src/screens/AccountScreen.tsx` строка «Всего тапов» заменена на «Гостей обслужено» (`state.totalServed`), строка «Сила тапа» убрана. Поля `totalTaps`/`tapPower` в состоянии остались (не трогали). Lint/tsc PASS, превью: три строки. В коммите `f26e79b`, выкачено.
 
 ## Задача: девочка перегенерирована целиком (2026-11-08)
 
 - Новый лист сгенерирован в Comfy Cloud (Nano Banana 2.1, промпт `design/nano-banana-girl-full-prompt.md`; Image 1 — `girl-ref-v2`, Image 2 — `customer-boy.webp`), исходник — `design/sprites/girl-sheet-v3-raw.webp` (1400², 4×4 на пурпурном фоне). Все 4 ряда новые: идёт вниз-вправо, уходит на северо-запад спиной, сидит лицом (ждёт/зовёт/ест), сидит спиной к столу на северо-запад и ест чебурек.
 - Сборка в `public/figma/restaurant/customer-girl.webp` (1200×1196, клетки 300×299): ключ пурпура + удаление пурпурной каймы, один масштаб 235/298 для всех рядов; ряды 0–2 выровнены по центру головы и низу как прежняя девочка, ряд 3 — по правому краю спины (x 234) и низу 266, чтобы кадры не дрожали. CSS `customer-girl.webp?v=5`. Это заменяет правки ниже (отражение рядов и вклейку чебурека).
-- Проверено в превью: оба стула (ждёт, ест лицом и спиной), ходьба рядом с мальчиком — рост совпадает; build PASS. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Проверено в превью: оба стула (ждёт, ест лицом и спиной), ходьба рядом с мальчиком — рост совпадает; build PASS. В коммите `f26e79b`, выкачено.
 
 ## Задача: девочка смотрит на северо-запад (сидит спиной и уходит) (2026-11-08, заменено)
 
-- По жалобе пользователя: в ряду 3 (сидит спиной) `customer-girl.webp` девочка была повёрнута на северо-восток. Кадры отражены по горизонтали со сдвигом +20 px, чтобы точка бедра (160, 215) осталась на месте; теперь она смотрит к столу, как мальчик. Ряд 1 (уходит к двери) тоже шёл на северо-восток — отражён относительно точки ступней (x 150), теперь идёт на северо-запад, как мальчик. CSS `customer-girl.webp?v=3`. Проверка — `design/girl-front-chair-nw.jpg`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- По жалобе пользователя: в ряду 3 (сидит спиной) `customer-girl.webp` девочка была повёрнута на северо-восток. Кадры отражены по горизонтали со сдвигом +20 px, чтобы точка бедра (160, 215) осталась на месте; теперь она смотрит к столу, как мальчик. Ряд 1 (уходит к двери) тоже шёл на северо-восток — отражён относительно точки ступней (x 150), теперь идёт на северо-запад, как мальчик. CSS `customer-girl.webp?v=3`. Проверка — `design/girl-front-chair-nw.jpg`. Заменено новым листом в `f26e79b`.
 - По просьбе пользователя добавлена еда спиной: в ряд 3, кадры 2–3 `customer-girl.webp`, вклеена иконка чебурека (`food-cheburek.png`) — кадр 2 на основе «рука поднята» (чебурек у лица), кадр 3 на основе «ждёт» (чебурек в руке у колен). CSS `customer-girl.webp?v=4`. Проверка — `design/girl-front-chair-eat.jpg`.
 
 ## Последняя задача: линия поперёк гостя на переднем стуле (2026-11-08)
@@ -63,7 +63,7 @@
 - Данные: `INGREDIENTS`, `FOODS` (с `ingredients`, `cookSeconds`, `price`), `STARTING_PANTRY`, `hasIngredients` в `content.ts`; `GameState.pantry`; в `gameStore` — `buyIngredient`, `cookDish` (списывает энергию и продукты); `spendEnergy` удалён.
 - Кухня: `useKitchen` хранит `cooking` ({foodId, startedAt, seconds}) и `ready: string[]` (id блюд на стойке); на стойке — иконки готовых блюд; гость берёт самое старое и платит его цену. `chefCellAt(…, cookSeconds)` растягивает/сжимает фазу у доски под время блюда (мин. 0,3 с).
 - UI: в «Магазине» вкладки «Продукты» / «Монеты и алмазы» (`.shop-tabs`); в «Еде» — состав с иконками (нехватка подсвечена), энергия · время · цена, кнопка «Нет продуктов». Маркер обучения `data-tutorial="cook"` — только на чебуреке.
-- Изменены: `src/data/content.ts`, `src/types/game.ts`, `src/store/gameStore.ts`, `src/store/kitchenStore.ts`, `src/components/customerTimeline.ts`, `src/components/RestaurantScene.tsx`, `src/components/FoodMenu.tsx`, `src/components/Modals.tsx`, `src/screens/GameScreen.tsx`, `src/index.css`; новые `public/figma/food/`, макеты и промпт в `design/`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/data/content.ts`, `src/types/game.ts`, `src/store/gameStore.ts`, `src/store/kitchenStore.ts`, `src/components/customerTimeline.ts`, `src/components/RestaurantScene.tsx`, `src/components/FoodMenu.tsx`, `src/components/Modals.tsx`, `src/screens/GameScreen.tsx`, `src/index.css`; новые `public/figma/food/`, макеты и промпт в `design/`. Не закоммичено.
 - Проверки: lint (3 прежних предупреждения purity), build PASS; превью 390×844: старый сейв получил 5 муки/5 мяса, покупка помидоров и огурцов (+5, −5 монет), салат готовится 4 с, −3 энергии, −1 помидор/огурец, на стойке иконка салата. Подача гостю живьём не проверена (панель браузера была скрыта, сцена не анимировалась).
 - Известные проблемы: облачко заказа гостя всегда показывает чебурек; гость не выбирает конкретное блюдо. Повар лепит тесто для любого блюда.
 - Следующая точка входа: `FOODS`/`INGREDIENTS` в `src/data/content.ts`; заказ конкретного блюда — облачко в `RestaurantScene.tsx`.
@@ -79,7 +79,7 @@
 - Гости приходят в случайное время: в среднем 2 в минуту × коэффициент, интервал экспоненциальный, обрезан до 0,27…2 × среднего (8…60 с при базе) — `nextGuestDelay` в `customerTimeline.ts`. Одновременно до 2 гостей, по одному на стул, у каждого своё облачко; если оба стула заняты, гость не заходит. Нажатие на ждущего гостя обслуживает именно его. Повар «говорит» на каждый новый заказ.
 - Коэффициент — новое улучшение «Реклама» (`ads`, +25% за уровень, макс. 20) в `UPGRADES`; `BASE_GUESTS_PER_MINUTE` и `guestRateMultiplier` в `content.ts`, передаётся в сцену из `GameScreen` (`guestsPerMinute`).
 - Обучение не менялось: начинается на первом госте; палец на шаге подачи указывает на ждущего гостя (`.gs-scene__boy[data-waiting="true"]`).
-- Изменены: `src/components/RestaurantScene.tsx` (слоты по стульям вместо одного цикла), `src/components/customerTimeline.ts`, `src/components/Tutorial.tsx`, `src/screens/GameScreen.tsx`, `src/data/content.ts`, `src/index.css`; новый `public/figma/restaurant/customer-girl.webp`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/components/RestaurantScene.tsx` (слоты по стульям вместо одного цикла), `src/components/customerTimeline.ts`, `src/components/Tutorial.tsx`, `src/screens/GameScreen.tsx`, `src/data/content.ts`, `src/index.css`; новый `public/figma/restaurant/customer-girl.webp`. Не закоммичено.
 - Проверки: lint (3 прежних предупреждения), build PASS; браузер — две девочки одновременно на обоих стульях с двумя облачками, подача правой (левая продолжает ждать), обучение на первом госте (мальчик) с пальцем на нём.
 - Известное: интервалы случайны, поэтому иногда гостей долго нет (до 60 с при базе). При скрытой вкладке rAF останавливается, гости «замирают» — как и раньше.
 - Осталось: проверка в Telegram; музыка — ждём трек из MiniMax.
@@ -98,7 +98,7 @@
 ## Последняя задача: ноги мальчика под передним стулом (2026-11-07)
 
 - Исправлено (по жалобе пользователя): на переднем (правом) стуле мальчик сидит спиной между слоями стула, и его ноги были видны под сиденьем. Теперь у него `clip-path` (`FRONT_SEAT_CLIP` в `RestaurantScene.tsx`) — всё ниже переднего края сиденья скрыто; на левом стуле и при ходьбе не применяется. До/после — `design/boy-front-chair-fix.jpg`.
-- Изменены: `src/components/RestaurantScene.tsx`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/components/RestaurantScene.tsx`. Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; все 4 кадра сидения собраны офлайн, в браузере 390×844 — второй гость на переднем стуле.
 
 ## Последняя задача: повар у доски и без прыжка (2026-11-07)
@@ -106,14 +106,14 @@
 - По просьбе пользователя: повар больше не подпрыгивает, когда гость делает заказ (`chefSurprise` удалён). Место готовки `CHEF_TO_TABLE` = { x: -50, y: -95 } (было -105/-75): тесто и скалка теперь на разделочной доске (кадр `design/chef-at-board-v2.png`). Сдвиг влево, как просил пользователь, уводил тесто с доски — выбран сдвиг, при котором тесто на доске; ждёт оценки.
 - Новый лист `public/figma/restaurant/chef-walk.webp` (сгенерирован пользователем, исходник `design/sprites/chef-walk-raw.webp`; зелёный фон вырезан, кадры приведены к сетке и масштабу `chef-sprite.webp`, 4×3 по 450×449): ряд 0 — ходьба сбоку вправо, ряд 1 — ходьба 3/4 к нам, ряд 2 — покой / «ой!» / улыбка / моргание. `chefCellAt(cookElapsed, orderElapsed)` возвращает `sheet` и `flip`: к доске — боковая ходьба, отражённая влево (временно, нет кадров ходьбы спиной), обратно — ходьба к нам, при заказе (по просьбе пользователя) покой → кадр «говорит» (`chef-sprite.webp`, ряд 0, кадр 2) на 1,2 с → покой. Покой — из старого листа (ряд 0, кадр 1), под пару к кадру «говорит». Раскадровка — `design/chef-walk-frames.jpg`. Поворот `CHEF_TURN` убран.
 - Ждём от пользователя ряд «ходьба спиной» (промпт в чате) — заменит отражённую боковую ходьбу.
-- Изменены: `src/components/RestaurantScene.tsx`, `src/components/customerTimeline.ts`, `src/components/Tutorial.tsx`, `src/index.css`; новые `public/figma/restaurant/chef-walk.webp`, `design/sprites/chef-walk-raw.webp`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/components/RestaurantScene.tsx`, `src/components/customerTimeline.ts`, `src/components/Tutorial.tsx`, `src/index.css`; новые `public/figma/restaurant/chef-walk.webp`, `design/sprites/chef-walk-raw.webp`. Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; браузер 390×844 — последовательность кадров при готовке и при заказе снята логом.
 - Следующая точка входа: `chefCellAt` в `src/components/customerTimeline.ts` (подключить новые кадры).
 
 ## Последняя задача: обучение — реплики от повара в сцене (2026-11-07)
 
 - По просьбе пользователя: отдельного портрета больше нет. Облачко стоит над головой повара в сцене, хвостик указывает на него; если облачко перекрывает цель (кнопку), оно поднимается выше неё. Экран затемнён (SVG-слой с вырезом под цель), повар подсвечен: поверх затемнения рисуется копия его спрайта с тем же кадром и местом (`.tutorial__chef`). Рамка и зелёная стрелка убраны, остался палец. Нажатия не блокируются.
-- Изменены: `src/components/Tutorial.tsx`, `src/index.css`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/components/Tutorial.tsx`, `src/index.css`. Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; браузер 375×812 — шаги «Еда» и «Готовить».
 - Шаг «Готовить» (по просьбе пользователя): повар не подсвечивается, облачко без хвостика по центру сразу над панелью «Еда» (`anchor` в `STEPS`). Шаг подачи — без затемнения и без выделения мальчика (`noDim`), только облачко и палец. Проверено на 320×568, 375×667, 390×844, 430×932, 768×1024.
 - Следующая точка входа: `src/components/Tutorial.tsx`.
@@ -121,7 +121,7 @@
 ## Последняя задача: окна по центру экрана (2026-11-07)
 
 - Реализовано (утверждено пользователем по `design/mockup-modal-centered-boost.jpg`): «Бусты», «Магазин», «Настройки» открываются по центру видимой области. `.modal-backdrop`: `place-items: center`, высота `var(--tg-viewport-stable-height, 100dvh)` (переменную ставит `telegram-web-app.js`), отступы сверху/снизу учитывают `--safe-top`/`--safe-bottom` и `--tg-content-safe-area-inset-*` (кнопки Telegram в fullscreen). `.modal`: `max-height: min(640px, 100%)` (длинное окно прокручивается внутри), скругление 24px со всех сторон, тень вниз, анимация `modal-pop` (лёгкое увеличение) вместо `slide-up`.
-- Изменены: `src/index.css`; новый `design/mockup-modal-centered-boost.jpg`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/index.css`; новый `design/mockup-modal-centered-boost.jpg`. Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; превью — отступ сверху равен отступу снизу для всех трёх окон на 320×480, 360×640, 430×932; на 360×420 «Магазин» в пределах 16px-полей с прокруткой.
 - Осталось: проверка в реальном Telegram (fullscreen, клавиатура не используется).
 - Следующая точка входа: `.modal-backdrop` в `src/index.css`.
@@ -130,14 +130,14 @@
 
 - Реализовано (утверждено пользователем по `design/mockup-tasks-gems.jpg`): в `TASKS` остались «Обслужи 2 гостей» (`serve_2`, 2 💎) и «Пригласи гостя» (`invite_1`, 5 💎; кнопка «Пригласить» по-прежнему только отмечает выполнение). Награда за задачи — алмазы (`claimTask` пополняет `hard`). Экран: «Задачи» / «Выполняй и забирай алмазы», иконка награды — `game-gem.svg`.
 - Подача блюда — `sellDish(price)` в `gameStore` (вместо `earnSoft`): монеты + `totalServed` (новое поле `GameState`) + прогресс всех задач типа `serve`. Новые задачи добавляются в `TASKS` (типы `serve` | `invite`).
-- Изменены: `src/data/content.ts`, `src/types/game.ts`, `src/store/gameStore.ts`, `src/screens/GameScreen.tsx`, `src/screens/TasksScreen.tsx`; новый `design/mockup-tasks-gems.jpg`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/data/content.ts`, `src/types/game.ts`, `src/store/gameStore.ts`, `src/screens/GameScreen.tsx`, `src/screens/TasksScreen.tsx`; новый `design/mockup-tasks-gems.jpg`. Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; превью: 2 подачи → 2/2, «Забрать» → +2 💎, «Пригласить» → «Забрать» → +5 💎 (итого 7), монеты не начисляются.
 - Известные проблемы: в `gameStore` остались записи прогресса старых задач (`taps_*`, `earn_50k`, `upgrade_3`) — безвредны, но мертвы; у старых сейвов в `taskProgress` лежат их ключи. Vite в превью однажды не подхватил серию быстрых правок — помог перезапуск dev-сервера.
 - Следующая точка входа: `TASKS` в `src/data/content.ts`.
 
 ## Последняя задача: чебурек стоит 5 энергии (2026-11-07)
 
-- По запросу пользователя `FOODS[].energy` у чебурека 30 → 5 (`src/data/content.ts`); карточка в меню показывает «⚡ 5 · 5 с». Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- По запросу пользователя `FOODS[].energy` у чебурека 30 → 5 (`src/data/content.ts`); карточка в меню показывает «⚡ 5 · 5 с». Не закоммичено.
 - Проверки: превью — готовка 100 → 95; lint (2 прежних предупреждения), build PASS.
 - Известные проблемы: при 5 энергии и +1 за 5 с энергия почти не ограничивает игру (раздача на 3 блюда — главный ограничитель); баланс улучшений «Запас энергии»/«Восстановление» не пересмотрен.
 - Следующая точка входа: `FOODS` в `src/data/content.ts`.
@@ -145,7 +145,7 @@
 ## Последняя задача: подсветка «Еда» и русские подписи навигации (2026-11-07)
 
 - Реализовано (утверждено пользователем по `design/mockup-nav-food-inactive.jpg`): в кафе «Еда» подсвечена только при открытом меню еды (`GameNav active={foodOpen ? activeTab : null}`, проп `active` теперь `TabId | null`); остальные вкладки подсвечиваются как раньше. Подписи переведены: «Tasks» → «Задачи», «Town» → «Город», «Upgrade» → «Улучшения», «Account» → «Аккаунт», кнопка «Shop» → «Магазин» («Boost» не менялась). На 360 px «Улучшения» влезает впритык (61 из 62 px).
-- Изменены: `src/components/GameNav.tsx`, `src/screens/GameScreen.tsx`; новый `design/mockup-nav-food-inactive.jpg`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/components/GameNav.tsx`, `src/screens/GameScreen.tsx`; новый `design/mockup-nav-food-inactive.jpg`. Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; превью 390×844: меню закрыто — ничего не подсвечено, открыто — «Еда», «Задачи» — подсвечены «Задачи», возврат через «Еда» открывает меню и подсвечивает её.
 - Следующая точка входа: `src/components/GameNav.tsx`.
 
@@ -154,7 +154,7 @@
 - Реализовано (утверждено пользователем): «Сбросить» (Настройки и Аккаунт) теперь удаляет и сейв, и флаг обучения `chebutap.tutorial.v1`, обнуляет кухню (`useKitchen().reset`: готовка, блюда на раздаче), переключает на кафе, закрывает меню и перемонтирует `GameScreen` (`key={store.resetId}`) — посетитель и обучение начинаются заново. Без перезагрузки страницы.
 - Подача заказа даёт `FOODS[].price` монет (чебурек — 3) через новый `earnSoft` в `gameStore` (идёт и в `totalEarned`); буст на цену не влияет.
 - Ключ обучения перенесён в `content.ts` (`TUTORIAL_STORAGE_KEY`). После сброса в `localStorage` остаётся только `chebutap-save-v1` с начальным состоянием; учёт заходов в Supabase сбросом не трогается.
-- Изменены: `src/data/content.ts`, `src/store/gameStore.ts` (`resetId`, `earnSoft`), `src/store/kitchenStore.ts` (`reset`), `src/App.tsx`, `src/screens/GameScreen.tsx`, `src/components/Tutorial.tsx`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/data/content.ts`, `src/store/gameStore.ts` (`resetId`, `earnSoft`), `src/store/kitchenStore.ts` (`reset`), `src/App.tsx`, `src/screens/GameScreen.tsx`, `src/components/Tutorial.tsx`. Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; превью: подача → 0→3 монеты, флаг `done`; сброс во время готовки → 0 монет, 100/100, флаг удалён, обучение снова с шага «Еда», раздача пуста.
 - Известные проблемы: цена берётся у `FOODS[0]` — кухня не помнит, какое блюдо готовилось (пока блюдо одно).
 - Следующая точка входа: `handleServe` в `src/screens/GameScreen.tsx`.
@@ -164,7 +164,7 @@
 - Реализовано (утверждено пользователем по `design/mockup-tutorial-step1.jpg`): компонент `src/components/Tutorial.tsx`. Когда впервые садится гость и поднимает руку, по центру экрана появляется портрет повара (кадр спрайта в белой обводке) с облачком, а рука `public/figma/tutorial-hand.png` (сгенерирована пользователем, фон вырезан) с жёлтой пунктирной рамкой и зелёной стрелкой показывает цель: «Еда» → «Готовить» → гость → «Отлично, босс! Так и работаем 👍» (2,8 с). Шаги считаются по состоянию (меню открыто, готовка, блюдо на раздаче, подача), нажатия не блокируются. После подачи ставится флаг `localStorage['chebutap.tutorial.v1'] = 'done'`, больше не показывается.
 - Оверлей рендерится порталом в `document.body` (у `.game-screen` есть transform, `position: fixed` внутри ломается); z-index 65 — над навигацией и меню «Еда», под модалками.
 - Цели помечены `data-tutorial` («food-nav» в `GameNav`, «cook» в `FoodMenu`) и `.gs-scene__boy`. `RestaurantScene` получил проп `onWaitingChange`; `GameScreen` держит `waiting` и счётчик подач `served`.
-- Изменены: новые `src/components/Tutorial.tsx`, `public/figma/tutorial-hand.png`, `design/mockup-tutorial-step1.jpg`; `src/components/RestaurantScene.tsx`, `src/screens/GameScreen.tsx`, `src/components/GameNav.tsx`, `src/components/FoodMenu.tsx`, `src/index.css`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: новые `src/components/Tutorial.tsx`, `public/figma/tutorial-hand.png`, `design/mockup-tutorial-step1.jpg`; `src/components/RestaurantScene.tsx`, `src/screens/GameScreen.tsx`, `src/components/GameNav.tsx`, `src/components/FoodMenu.tsx`, `src/index.css`. Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; браузер 375×812 — все 4 шага по очереди, после подачи флаг `done` и оверлей исчез, ошибок консоли нет.
 - Известные проблемы: рамка у гостя шире фигуры (размер кадра спрайта); при уходе на другую вкладку до подачи обучение начнётся заново со следующим гостем.
 - Следующая точка входа: `src/components/Tutorial.tsx` (тексты в `STEPS`).
@@ -172,7 +172,7 @@
 ## Последняя задача: новая иконка чебурека (2026-11-07)
 
 - Реализовано (вариант выбран и утверждён пользователем): плоская 2D-иконка чебурека, сгенерирована пользователем в Gemini, белый фон вырезан, 256×150 PNG `public/figma/food-cheburek.png`. Подключена везде: меню «Еда» (`FOODS[].icon`), облачко заказа и блюда на раздаче (`RestaurantScene`), вкладка «Еда» (`GameNav`). `food-cheburek.svg` в коде больше не используется (файл оставлен). У `.food-card__img` и `.gs-scene__dish` добавлен `object-fit: contain` — PNG шире старого SVG.
-- Изменены: новый `public/figma/food-cheburek.png`; `src/data/content.ts`, `src/components/RestaurantScene.tsx`, `src/components/GameNav.tsx`, `src/index.css`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: новый `public/figma/food-cheburek.png`; `src/data/content.ts`, `src/components/RestaurantScene.tsx`, `src/components/GameNav.tsx`, `src/index.css`. Не закоммичено.
 - Проверки: превью 375×812 — иконка в меню, облачке, на раздаче и на вкладке, ошибок в консоли нет; lint (2 прежних предупреждения), build PASS.
 - Осталось: при желании удалить неиспользуемый `public/figma/food-cheburek.svg`.
 - Следующая точка входа: `public/figma/food-cheburek.png`.
@@ -180,7 +180,7 @@
 ## Последняя задача: окна «Магазин»/«Бусты»/«Настройки» прятались под навигацией (2026-11-07)
 
 - Исправлено: `.modal-backdrop` был ниже `.gs-nav-wrap` (z-index 50 < 60), нижняя навигация закрывала конец списка (видно на Android в Telegram). Теперь z-index 70 и нижний отступ учитывает `--safe-bottom`; окно перекрывает навигацию, пока открыто. Меню «Еда» не менялось (оно намеренно над навигацией).
-- Изменены: `src/index.css`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/index.css`. Не закоммичено.
 - Проверки: превью 360×640 — «Магазин» и «Бусты» видны целиком, нижний край окна не перекрыт; lint (2 прежних предупреждения), build PASS.
 - Осталось: проверка в реальном Telegram после деплоя.
 - Следующая точка входа: `.modal-backdrop` в `src/index.css`.
@@ -188,7 +188,7 @@
 ## Последняя задача: уведомление «энергия пополнилась» в боте (2026-11-07)
 
 - Реализовано (утверждено пользователем; частота — не чаще 1 раза в 6 ч): колонки `energy_full_at`, `energy_notified_at`, `bot_blocked` в `players`, SQL-функции `set_energy_reminder`, `claim_energy_reminders`, `mark_bot_blocked`; Edge Functions `energy-schedule` (ставит/отменяет, проверяет initData) и `notify-energy` (рассылка, вызывается pg_cron каждую минуту); клиентский хук `useEnergyReminder` в `App.tsx` (visibilitychange/pagehide/Telegram `deactivated`/`activated`). Текст: «⚡ Твоя энергия пополнилась! Заходи и готовь новые блюда 🥟», кнопка «🍳 Играть» при заданном `MINI_APP_URL`.
-- Изменены: новые `supabase/migrations/20261107010000_energy_reminder.sql`, `supabase/migrations/20261107010100_energy_reminder_cron.sql`, `supabase/functions/_shared/telegram.ts`, `supabase/functions/energy-schedule/index.ts`, `supabase/functions/notify-energy/index.ts`, `src/lib/energyReminder.ts`; `supabase/functions/track-visit/index.ts` (импорт общей проверки), `supabase/config.toml`, `src/App.tsx`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: новые `supabase/migrations/20261107010000_energy_reminder.sql`, `supabase/migrations/20261107010100_energy_reminder_cron.sql`, `supabase/functions/_shared/telegram.ts`, `supabase/functions/energy-schedule/index.ts`, `supabase/functions/notify-energy/index.ts`, `src/lib/energyReminder.ts`; `supabase/functions/track-visit/index.ts` (импорт общей проверки), `supabase/config.toml`, `src/App.tsx`. Не закоммичено.
 - Выкачено в Supabase 2026-11-07: миграции применены (`db push`, вкл. ранее вручную применённую `players`), функции `track-visit`, `energy-schedule`, `notify-energy` задеплоены; `CRON_SECRET` и Vault `notify_energy_url`/`notify_energy_secret` заданы; задача pg_cron `notify-energy` каждую минуту. `MINI_APP_URL` не задан — кнопка «Играть» берётся из кнопки меню бота (`getChatMenuButton`), если она web_app.
 - Проверки: lint (2 прежних предупреждения), build PASS; функции без подписи/секрета отвечают 401; cron-задача и секреты Vault на месте.
 - Осталось: закоммитить и выкатить игру (клиентский хук ещё не в проде); проверка в реальном Telegram.
@@ -217,28 +217,28 @@
 ## Последняя задача: повар стоит спокойно и удивляется заказу (2026-11-07)
 
 - Реализовано (по просьбе пользователя): без заказа повар стоит неподвижно на одном кадре (дыхание и моргание убраны); когда мальчик поднимает руку с заказом, повар один раз за визит удивлённо подпрыгивает. Знаки «!» и чёрточки удивления убраны по просьбе пользователя. Спрайт не менялся.
-- Изменены: `src/components/customerTimeline.ts` (`chefCellAt(cookElapsed)` без параметра времени, idle — `CHEF_IDLE`), `src/components/RestaurantScene.tsx` (`chefSurprise` — только прыжок, флаг `surprised` в визите), `src/screens/GameScreen.tsx`, `src/index.css`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/components/customerTimeline.ts` (`chefCellAt(cookElapsed)` без параметра времени, idle — `CHEF_IDLE`), `src/components/RestaurantScene.tsx` (`chefSurprise` — только прыжок, флаг `surprised` в визите), `src/screens/GameScreen.tsx`, `src/index.css`. Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; в браузере 390×844 кадр повара всё время `0% 0%`, прыжок один раз в момент заказа, знаков нет.
 - Следующая точка входа: оценка пользователем; при желании — отдельный кадр «удивлённое лицо» в спрайте повара.
 
 ## Последняя задача: раздача и подача заказа (2026-11-06)
 
 - Реализовано (по описанию пользователя и макету `design/mockup-counter-cheburek.png`): после готовки чебурек появляется в свободном лотке раздачи (3 лотка, при полной раздаче кнопка меню «Нет места»). Мальчик сидит с поднятой рукой и облачком, пока его не нажмут при готовом чебуреке: тогда чебурек снимается с раздачи, облачко исчезает, он ест ~4,5 с и уходит, следующий визит — на другой стул. Нажатие без чебурека — облачко трясётся, он ждёт дальше. Блюда на раздаче не сохраняются при перезагрузке.
-- Изменены: `src/components/customerTimeline.ts` (`visitFrameAt(index, u, servedU)`, `visitEndAt`, `VISIT_COUNT`, `COUNTER_TRAYS`, поле `waiting`; `customerFrameAt`/`LOOP_SECONDS` удалены), `src/components/RestaurantScene.tsx` (состояние визита в ref, тап по мальчику, блюда на раздаче), `src/screens/GameScreen.tsx` (`ready`), `src/components/FoodMenu.tsx` (`full`), `src/index.css` (`.gs-scene__dish`). Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/components/customerTimeline.ts` (`visitFrameAt(index, u, servedU)`, `visitEndAt`, `VISIT_COUNT`, `COUNTER_TRAYS`, поле `waiting`; `customerFrameAt`/`LOOP_SECONDS` удалены), `src/components/RestaurantScene.tsx` (состояние визита в ref, тап по мальчику, блюда на раздаче), `src/screens/GameScreen.tsx` (`ready`), `src/components/FoodMenu.tsx` (`full`), `src/index.css` (`.gs-scene__dish`). Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; таймлайн проверен вызовами; браузер 390×844: ожидание, появление чебурека после готовки, подача тапом (чебурек снят, мальчик доел и ушёл), тап без чебурека, 3 блюда → «Нет места».
 - Следующая точка входа: оценка пользователем; дальше — оплата за заказ, второй клиент (девочка).
 
 ## Последняя задача: облачко заказа над мальчиком (2026-11-06)
 
 - Реализовано (утверждено по `design/mockup-order-bubble.png`): когда сидящий мальчик поднимает руку (2–3,5 с после посадки), рядом с головой появляется кремовое облачко с маленьким чебуреком и хвостиком к голове (у дальнего стула — слева сверху, у переднего — над головой); появляется с лёгким «пружинящим» увеличением, исчезает, когда он начинает есть. На готовку повара пока не влияет.
-- Изменены: `src/components/customerTimeline.ts` (поле `bubble` в кадре, `BUBBLE_SIZE`, позиция облачка на визит), `src/components/RestaurantScene.tsx` (span с SVG облачка, обновляется в rAF), `src/index.css` (`.gs-scene__bubble`). Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: `src/components/customerTimeline.ts` (поле `bubble` в кадре, `BUBBLE_SIZE`, позиция облачка на визит), `src/components/RestaurantScene.tsx` (span с SVG облачка, обновляется в rAF), `src/index.css` (`.gs-scene__bubble`). Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; тайминг проверен вызовом `customerFrameAt`; в браузере 390×844 облачко на обоих стульях совпадает с макетом, ошибок консоли нет.
 - Следующая точка входа: связать заказ с поваром (облачко → готовка → подача).
 
 ## Последняя задача: меню «Еда» и готовка по заказу (2026-11-06)
 
 - Реализовано (утверждено пользователем по `design/mockup-food-menu.jpg`, вариант «тап оставить»): кнопка меню Earn → «Еда» (иконка чебурека); открывает деревянную панель над меню с блюдом «Чебурек» и кнопкой «Готовить». Закрывается ×, тапом по затемнению или повторной «Еда»; с других вкладок «Еда» переключает на ресторан и открывает меню. «Готовить» закрывает панель, повар идёт к доске, готовит и возвращается (~5 с); пока готовит — кнопка «Готовится…» и неактивна. Повар больше не готовит по таймеру, без заказа стоит в покое. Тап по повару по-прежнему даёт монеты.
-- Изменены: новый `src/components/FoodMenu.tsx`, `public/figma/food-cheburek.svg`; `src/App.tsx` (`foodOpen`, `handleTab`), `src/screens/GameScreen.tsx` (`cookStartedAt`, `.gs-nav-wrap`), `src/components/RestaurantScene.tsx` (проп `cookStartedAt`), `src/components/customerTimeline.ts` (`chefCellAt(seconds, cookElapsed)`, `CHEF_COOK_SECONDS`), `src/components/GameNav.tsx`, `src/data/content.ts` (`FOODS`), `src/index.css`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: новый `src/components/FoodMenu.tsx`, `public/figma/food-cheburek.svg`; `src/App.tsx` (`foodOpen`, `handleTab`), `src/screens/GameScreen.tsx` (`cookStartedAt`, `.gs-nav-wrap`), `src/components/RestaurantScene.tsx` (проп `cookStartedAt`), `src/components/customerTimeline.ts` (`chefCellAt(seconds, cookElapsed)`, `CHEF_COOK_SECONDS`), `src/components/GameNav.tsx`, `src/data/content.ts` (`FOODS`), `src/index.css`. Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; браузер 390×844: открытие/закрытие всеми тремя способами, переход с другой вкладки, «Готовится…» неактивна во время готовки и возвращается после, ошибок консоли нет. Таймлайн повара проверен вызовом `chefCellAt`; анимацию в браузере не удалось увидеть — панель браузера была скрыта, rAF не работал.
 - Известные проблемы: заказ пока ни на что не влияет (нет еды, клиентов и оплаты); на разделочном столе нарисована вторая скалка.
 - Следующая точка входа: визуальная оценка готовки пользователем; затем связь заказа с клиентом.
@@ -246,7 +246,7 @@
 ## Последняя задача: клиент-мальчик в сцене Earn (2026-11-06)
 
 - Реализовано (утверждено пользователем по макету `design/mockup-boy-visits.png`): мальчик входит в дверь, идёт к столу, сидит ~8 с (ждёт → машет → ест → жуёт), уходит; визиты чередуются между дальним стулом (лицом к нам) и передним (спиной). Дверь больше не по таймеру 10 с — открывается, когда он входит и выходит. Цикл ~35 с. Стол разрезан на слои (`chair-left`, `table-main`, `chair-right`, `chair-right-back`), чтобы сидящий был между ними. Тап по повару не менялся.
-- Изменены: новый `src/components/customerTimeline.ts` (чистая функция времени → кадр), `src/components/RestaurantScene.tsx` (rAF-цикл пишет стили в DOM без ре-рендера, z-index слоёв), `src/index.css` (убрана CSS-анимация двери, `.gs-scene__boy`), `public/figma/restaurant/` (+`customer-boy.webp`, слои стола; удалён `table.webp`). Исходники спрайтов — `design/sprites/`. Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: новый `src/components/customerTimeline.ts` (чистая функция времени → кадр), `src/components/RestaurantScene.tsx` (rAF-цикл пишет стили в DOM без ре-рендера, z-index слоёв), `src/index.css` (убрана CSS-анимация двери, `.gs-scene__boy`), `public/figma/restaurant/` (+`customer-boy.webp`, слои стола; удалён `table.webp`). Исходники спрайтов — `design/sprites/`. Не закоммичено.
 - Доработка по Figma: стол 325,519 320×263, повар 455,885 128×250 (пользователь изменил в Figma); мальчик увеличен (`BOY_SCALE` 0.36 → 0.5). Сиденья считаются от `TABLE` в `customerTimeline.ts`.
 - Повар (утверждён по `design/mockup-chef-states.png`): спрайт без сковороды `chef-sprite.webp` (4×3: idle 3 кадра — кадр без усов выброшен, turn, cook) вместо `chef.webp`; по своему таймеру ~11 с: стоит лицом (дышит, моргает) → поворот → готовит спиной ~4 с → поворот обратно; после поворота боком идёт к доске (`CHEF_TO_TABLE` −105, −75 через CSS `translate`) и готовит 3/4 спиной на NW (кадры `design/sprites/chef-cook-v3.webp`: мнёт → раскатывает ×8 → складывает), обратно идёт в кадре 3/4 лицом. В листе 9 кадров: idle 1–3, turn-1/turn-2, cook 1–4. Таймер временный, пользователь планирует переделать механику. Тап по повару работает. Передний стул целиком поверх сидящего мальчика (кроме сиденья). Спрайты повара в Figma — компонент `Chef` (54:237).
 - Проверки: lint (2 прежних предупреждения), build PASS; браузер 390×844: вход, сидение на обоих стульях, проход перед столом, повар ждёт/готовит, тап по повару +1, ошибок консоли нет.
@@ -256,7 +256,7 @@
 ## Предыдущая задача: сцена ресторана на экране Earn (2026-11-06)
 
 - Реализовано: на Earn вместо зелёного фона и монеты — сцена из Figma «Ресторан — слои» (комната, дверь, вывеска, окно, стол со стульями, разделочный стол, раздача, плита, повар); тап по повару даёт монеты (+N, сжатие, haptic); дверь — спрайт из 4 кадров, цикл 10 с (открывается за ~0,35 с, открыта ~1 с). UI и игровая логика не менялись.
-- Изменены: новые `src/components/RestaurantScene.tsx`, `public/figma/restaurant/*.webp`; `src/screens/GameScreen.tsx`, `src/index.css` (блок в конце). Исходники ассетов — `design/` (не в сборке). Коммит `f26e79b`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457165017 — SUCCESS.
+- Изменены: новые `src/components/RestaurantScene.tsx`, `public/figma/restaurant/*.webp`; `src/screens/GameScreen.tsx`, `src/index.css` (блок в конце). Исходники ассетов — `design/` (не в сборке). Не закоммичено.
 - Проверки: lint (2 прежних предупреждения), build PASS; браузер 390×844 и 320×568 — сцена на месте, тап по повару увеличивает баланс, ошибок консоли нет; тайминг двери проверен по кадрам анимации.
 - Не проверено: реальный Telegram; списание энергии при тапе по повару визуально не подтверждено.
 - Известные проблемы: на 320×568 нижняя часть сцены (раздача, повар) частично под полосой энергии и меню; `design/` с исходниками не в `.gitignore`.
