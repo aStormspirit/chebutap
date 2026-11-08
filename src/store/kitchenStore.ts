@@ -9,9 +9,10 @@ export type CookingOrder = { foodId: string; startedAt: number; seconds: number 
 
 /**
  * One chair: who sits there and when the visit started (`Date.now()`, null = free);
- * `servedU` is when the customer was served, seconds into the visit.
+ * `servedU` is when the customer was served, seconds into the visit;
+ * `bill` is the coins he pays once he has eaten (null = nothing owed).
  */
-export type GuestSlot = { kind: GuestKind; start: number | null; servedU: number | null; waiting: boolean };
+export type GuestSlot = { kind: GuestKind; start: number | null; servedU: number | null; waiting: boolean; bill: number | null };
 /** Customers at the table and when the next one comes in (`Date.now()`). Mutated by the scene every frame. */
 export type Guests = { slots: GuestSlot[]; nextArrival: number };
 
@@ -19,7 +20,7 @@ type KitchenSave = { cooking: CookingOrder | null; ready: string[]; guests: Gues
 
 function freshGuests(): Guests {
   return {
-    slots: Array.from({ length: VISIT_COUNT }, () => ({ kind: 'boy', start: null, servedU: null, waiting: false })),
+    slots: Array.from({ length: VISIT_COUNT }, () => ({ kind: 'boy', start: null, servedU: null, waiting: false, bill: null })),
     nextArrival: Date.now() + FIRST_GUEST_DELAY * 1000,
   };
 }
@@ -46,6 +47,7 @@ function loadKitchen(): KitchenSave {
               start: isNum(s?.start) ? s.start : null,
               servedU: isNum(s?.servedU) ? s.servedU : null,
               waiting: s?.waiting === true,
+              bill: isNum(s?.bill) ? s.bill : null,
             })),
           }
         : freshGuests();
@@ -116,12 +118,13 @@ export function useKitchen() {
     (food: FoodDef) => setCooking({ foodId: food.id, startedAt: Date.now(), seconds: food.cookSeconds }),
     [],
   );
-  /** Hand the oldest ready dish to the customer on chair `chair`: he eats and then leaves. */
-  const serve = useCallback((chair: number) => {
+  /** Hand the oldest ready dish to the customer on chair `chair`: he eats, pays `price` and leaves. */
+  const serve = useCallback((chair: number, price: number) => {
     const slot = guests.current.slots[chair];
     if (slot?.start != null) {
       slot.servedU = (Date.now() - slot.start) / 1000;
       slot.waiting = false;
+      slot.bill = price;
     }
     setReady((list) => list.slice(1));
   }, []);

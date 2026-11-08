@@ -11,7 +11,9 @@ import {
   nextGuestDelay,
   visitEndAt,
   visitFrameAt,
+  visitLeaveAt,
 } from './customerTimeline';
+import { coinBurst } from './coinBurst';
 import { FOODS } from '../data/content';
 import type { CookingOrder, Guests } from '../store/kitchenStore';
 
@@ -78,6 +80,8 @@ type Props = {
   ready: string[];
   /** Waiting customer on chair `i` was served: he takes one dish off the counter. */
   onServe: (i: number) => void;
+  /** A customer finished eating and paid his bill (coins reach the counter). */
+  onPay: (coins: number) => void;
   /** Some seated customer starts waiting for an order / nobody waits any more. */
   onWaitingChange?: (waiting: boolean) => void;
   /** Average customers per minute (base rate × «Реклама» multiplier). */
@@ -90,19 +94,25 @@ type Props = {
 const DISH = { w: 52, h: 35 };
 
 const CHAIRS = Array.from({ length: VISIT_COUNT }, (_, i) => i);
+/** Seconds before the customer gets up when his payment coins pop out (he is still seated). */
+const PAY_BEFORE_LEAVE = 0.6;
 
 /**
  * Restaurant background for the Earn screen: empty room, interior items, the door,
  * customers (boy or girl) who come in at random times, sit at the table and leave, and the chef who cooks.
  */
-export function RestaurantScene({ renderChef, cooking, ready, onServe, onWaitingChange, guestsPerMinute, guests }: Props) {
+export function RestaurantScene({ renderChef, cooking, ready, onServe, onPay, onWaitingChange, guestsPerMinute, guests }: Props) {
   const cookRef = useRef(cooking);
   const waitingChangeRef = useRef(onWaitingChange);
   const rateRef = useRef(guestsPerMinute);
+  const payRef = useRef(onPay);
+  /** Chairs whose coins are flying to the counter right now. */
+  const payingRef = useRef(new Set<number>());
   useEffect(() => {
     waitingChangeRef.current = onWaitingChange;
+    payRef.current = onPay;
     rateRef.current = guestsPerMinute;
-  }, [onWaitingChange, guestsPerMinute]);
+  }, [onWaitingChange, onPay, guestsPerMinute]);
   const readyRef = useRef(ready.length);
   useEffect(() => {
     cookRef.current = cooking;
@@ -141,6 +151,32 @@ export function RestaurantScene({ renderChef, cooking, ready, onServe, onWaiting
       let door = 0;
       let anyWaiting = false;
       slots.forEach((sl, i) => {
+        // Done eating: he pays — coins hop out of him just before he gets up and fly to the
+        // counter (straight to it if the app was closed meanwhile and he is long gone).
+        if (sl.start !== null && sl.bill !== null && !payingRef.current.has(i)) {
+          const sinceLeave = (now - sl.start) / 1000 - visitLeaveAt(i, sl.servedU) + PAY_BEFORE_LEAVE;
+          if (sinceLeave >= 0) {
+            const bill = sl.bill;
+            const settle = () => {
+              payingRef.current.delete(i);
+              if (sl.bill !== bill) return;
+              sl.bill = null;
+              payRef.current(bill);
+            };
+            const guestBox = guestRefs.current[i]?.getBoundingClientRect();
+            const coinBox = document.querySelector('.gs-balance__coin')?.getBoundingClientRect();
+            if (sinceLeave < 0.5 && guestBox?.width && coinBox) {
+              payingRef.current.add(i);
+              coinBurst(
+                { x: guestBox.left + guestBox.width * 0.5, y: guestBox.top + guestBox.height * 0.22 },
+                { x: coinBox.left + coinBox.width / 2, y: coinBox.top + coinBox.height / 2 },
+                settle,
+              );
+            } else {
+              settle();
+            }
+          }
+        }
         if (sl.start !== null && (now - sl.start) / 1000 >= visitEndAt(i, sl.servedU)) sl.start = null;
         const frame = sl.start === null ? null : visitFrameAt(i, (now - sl.start) / 1000, sl.servedU);
         if (frame) door = Math.max(door, frame.door);

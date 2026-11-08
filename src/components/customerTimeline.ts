@@ -157,6 +157,11 @@ export function visitEndAt(index: number, servedU: number | null): number {
   return visitTimes(VISITS[index], servedU).end;
 }
 
+/** When the customer on chair `index` finishes eating and gets up (Infinity until served). */
+export function visitLeaveAt(index: number, servedU: number | null): number {
+  return visitTimes(VISITS[index], servedU).leaveAt;
+}
+
 /** Scene state `u` seconds into visit `index`; `servedU` as in `visitTimes`. */
 export function visitFrameAt(index: number, u: number, servedU: number | null): CustomerFrame {
   const v = VISITS[index];

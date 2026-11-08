@@ -1,4 +1,4 @@
-import { BOOSTS, INGREDIENTS, SHOP_PACKS } from '../data/content';
+import { BOOSTS, SHOP_PACKS } from '../data/content';
 import { useSyncExternalStore } from 'react';
 import { formatNumber } from '../lib/format';
 import { isMusicEnabled, setMusicEnabled, subscribeMusic } from '../lib/music';
@@ -15,7 +15,7 @@ type Props = {
 export function Modals({ modal, store, onClose }: Props) {
   const musicOn = useSyncExternalStore(subscribeMusic, isMusicEnabled);
   if (!modal) return null;
-  const { state, activateBoost, buyShopPack, buyIngredient, addHard, resetProgress } = store;
+  const { state, activateBoost, buyShopPack, addHard, resetProgress } = store;
 
   return (
     <div className="modal-backdrop" onClick={onClose} role="presentation">
@@ -75,30 +75,18 @@ export function Modals({ modal, store, onClose }: Props) {
         {modal === 'shop' && (
           <>
             <h3 className="modal__title">Магазин</h3>
-            <p className="panel-sub">Покупайте продукты — из них повар готовит блюда</p>
-              <ul className="card-list">
-                {INGREDIENTS.map((ing) => (
-                  <li key={ing.id} className="game-card">
-                    <img className="shop-product__img" src={ing.icon} alt="" draggable={false} />
-                    <div className="game-card__main">
-                      <strong>
-                        {ing.name}
-                        {ing.pack > 1 && ` ×${ing.pack}`}
-                      </strong>
-                      <span className="game-card__meta">На складе: {state.pantry[ing.id] ?? 0}</span>
-                    </div>
-                    <button
-                      type="button"
-                      className="btn btn--wood"
-                      disabled={state.soft < ing.price}
-                      onClick={() => buyIngredient(ing.id)}
-                    >
-                      <CoinIcon className="btn__icon" />
-                      {ing.price}
-                    </button>
-                  </li>
-                ))}
-              </ul>
+            <p className="panel-sub">Скоро здесь появятся новые столы для кафе</p>
+            <ul className="card-list">
+              <li className="game-card">
+                <div className="game-card__main">
+                  <strong>Дополнительный стол</strong>
+                  <span className="game-card__meta">Больше гостей одновременно</span>
+                </div>
+                <button type="button" className="btn btn--wood" disabled>
+                  Скоро
+                </button>
+              </li>
+            </ul>
           </>
         )}
 

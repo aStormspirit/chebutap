@@ -1551,20 +1551,21 @@ ul {
   }
 }
 
-/* --- Shop products --- */
-.shop-product__img {
-  flex: none;
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
+
+/* Coins a guest pays with (`coinBurst.ts`): small, above the scene, below modals. */
+.coin-burst {
+  position: fixed;
+  z-index: 65;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 0 rgba(60, 25, 5, 0.6));
 }
 
-.food-card__ing img {
-  vertical-align: -4px;
-}
-
-.food-card__lack {
-  color: #ffb4a0;
+.coin-burst img {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 /* ===== Town: draggable city map (src/screens/TownScreen.tsx) ===== */

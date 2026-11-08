@@ -4,7 +4,7 @@ import { GameNav } from '../components/GameNav';
 import { RestaurantScene } from '../components/RestaurantScene';
 import { Tutorial } from '../components/Tutorial';
 import { WalletConnect } from '../components/WalletConnect';
-import { BASE_GUESTS_PER_MINUTE, FOODS, guestRateMultiplier, hasIngredients } from '../data/content';
+import { BASE_GUESTS_PER_MINUTE, FOODS, guestRateMultiplier } from '../data/content';
 import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';
 import type { Kitchen } from '../store/kitchenStore';
@@ -33,28 +33,28 @@ type Props = {
  * the «Еда» menu, which costs energy.
  */
 export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, onShop, onGems, onSettings, foodOpen, onFoodClose }: Props) {
-  const { state, cookDish, sellDish } = store;
+  const { state, cookDish, recordServe, earnCoins } = store;
   const { cooking, ready, guests, counterFull, startCooking, serve } = kitchen;
   /** Customer waits with a raised hand; served count — both only drive the tutorial. */
   const [waiting, setWaiting] = useState(false);
   const [served, setServed] = useState(0);
   const handleServe = useCallback((chair: number) => {
-    // The customer takes the oldest dish on the counter and pays its price.
+    // The customer takes the oldest dish on the counter; he pays its price once he has eaten.
     const food = FOODS.find((f) => f.id === ready[0]) ?? FOODS[0];
-    serve(chair);
-    sellDish(food.price);
+    serve(chair, food.price);
+    recordServe();
     setServed((n) => n + 1);
-  }, [ready, sellDish, serve]);
+  }, [ready, recordServe, serve]);
 
   const handleCook = useCallback(
     (foodId: string) => {
       const food = FOODS.find((f) => f.id === foodId);
-      if (!food || state.energy < food.energy || !hasIngredients(state.pantry, food)) return;
+      if (!food || food.soon || state.energy < food.energy) return;
       cookDish(food);
       startCooking(food);
       onFoodClose();
     },
-    [cookDish, onFoodClose, startCooking, state.energy, state.pantry],
+    [cookDish, onFoodClose, startCooking, state.energy],
   );
 
   const boostLeft = Math.max(0, state.boostEndsAt - Date.now());
@@ -67,6 +67,7 @@ export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, on
         cooking={cooking}
         ready={ready}
         onServe={handleServe}
+        onPay={earnCoins}
         onWaitingChange={setWaiting}
         guests={guests}
         guestsPerMinute={BASE_GUESTS_PER_MINUTE * guestRateMultiplier(state.upgradeLevels)}
@@ -92,7 +93,7 @@ export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, on
       </header>
 
       <div className="gs-balance">
-        <img src="/figma/game-coin.svg" width={34} height={34} alt="" />
+        <img className="gs-balance__coin" src="/figma/game-coin.svg" width={34} height={34} alt="" />
         <span className="gs-balance__value">{formatNumber(state.soft)}</span>
       </div>
 
@@ -127,7 +128,6 @@ export function GameScreen({ store, kitchen, activeTab, onTabChange, onBoost, on
             cooking={cooking !== null}
             full={counterFull}
             energy={state.energy}
-            pantry={state.pantry}
             onCook={handleCook} onClose={onFoodClose} />}
         <GameNav active={foodOpen ? activeTab : null} onChange={onTabChange} />
       </div>

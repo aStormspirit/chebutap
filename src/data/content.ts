@@ -173,20 +173,6 @@ export const SHOP_PACKS = [
   },
 ] as const;
 
-/** Products sold in the shop («Продукты» tab): `pack` pieces for `price` coins. */
-export const INGREDIENTS = [
-  { id: 'flour', name: 'Мука', icon: '/figma/food/flour.webp', pack: 1, price: 1 },
-  { id: 'meat', name: 'Мясо', icon: '/figma/food/meat.webp', pack: 1, price: 3 },
-  { id: 'tea', name: 'Чай', icon: '/figma/food/tea-leaves.webp', pack: 1, price: 1 },
-  { id: 'tomato', name: 'Помидор', icon: '/figma/food/tomato.webp', pack: 1, price: 1 },
-  { id: 'cucumber', name: 'Огурец', icon: '/figma/food/cucumber.webp', pack: 1, price: 1 },
-] as const;
-
-export type IngredientId = (typeof INGREDIENTS)[number]['id'];
-
-/** Products a new player (or an old save without a pantry) starts with — enough for the tutorial cheburek. */
-export const STARTING_PANTRY: Record<string, number> = { flour: 5, meat: 5 };
-
 export interface FoodDef {
   id: string;
   name: string;
@@ -196,18 +182,13 @@ export interface FoodDef {
   cookSeconds: number;
   /** Coins the customer pays. */
   price: number;
-  /** Products used per dish. */
-  ingredients: Partial<Record<IngredientId, number>>;
+  /** Shown in the menu but not cookable yet («Скоро»). */
+  soon?: boolean;
 }
 
-/** Dishes in the food menu; the chef cooks one per «Готовить» press from pantry products. */
+/** Dishes in the food menu; the chef cooks one per «Готовить» press for its energy. */
 export const FOODS: FoodDef[] = [
-  { id: 'cheburek', name: 'Чебурек', icon: '/figma/food-cheburek.png', energy: 3, cookSeconds: 5, price: 6, ingredients: { flour: 1, meat: 1 } },
-  { id: 'salad', name: 'Салат', icon: '/figma/food/salad.webp', energy: 3, cookSeconds: 4, price: 4, ingredients: { tomato: 1, cucumber: 1 } },
-  { id: 'tea', name: 'Чай', icon: '/figma/food/tea.webp', energy: 1, cookSeconds: 2, price: 2, ingredients: { tea: 1 } },
+  { id: 'cheburek', name: 'Чебурек', icon: '/figma/food-cheburek.png', energy: 3, cookSeconds: 5, price: 6 },
+  { id: 'salad', name: 'Салат', icon: '/figma/food/salad.webp', energy: 3, cookSeconds: 4, price: 4, soon: true },
+  { id: 'tea', name: 'Чай', icon: '/figma/food/tea.webp', energy: 1, cookSeconds: 2, price: 2, soon: true },
 ];
-
-/** Enough products in the pantry for one dish. */
-export function hasIngredients(pantry: Record<string, number>, food: FoodDef): boolean {
-  return Object.entries(food.ingredients).every(([id, n]) => (pantry[id] ?? 0) >= (n ?? 0));
-}

@@ -43,8 +43,6 @@ export interface GameState {
   totalEarned: number;
   /** Customers served with a dish; drives the serve tasks. */
   totalServed: number;
-  /** Products in stock by ingredient id (`INGREDIENTS`). */
-  pantry: Record<string, number>;
   upgradeLevels: Record<string, number>;
   buildingLevels: Record<string, number>;
   completedTasks: string[];
