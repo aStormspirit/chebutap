@@ -15,7 +15,7 @@
 
 ## Последняя задача: магазин и алмазы раздельно (2026-11-08)
 
-- По просьбе пользователя (макет `design/shop-split-mockup.png` утверждён): окно «Магазин» (`modal 'shop'`, кнопка «Магазин» в кафе и аккаунте) — только продукты, без вкладок; кнопка алмаза вверху открывает новое окно «Алмазы и монеты» (`modal 'gems'`: паки монет/алмазов, полная энергия, тестовые +50). Стили `.shop-tab*` удалены. Изменены `src/components/Modals.tsx`, `src/types/game.ts`, `src/App.tsx`, `src/screens/GameScreen.tsx`, `src/index.css`. Превью: оба окна открываются со своим содержимым; lint/tsc/build PASS. Не закоммичено.
+- По просьбе пользователя (макет `design/shop-split-mockup.png` утверждён): окно «Магазин» (`modal 'shop'`, кнопка «Магазин» в кафе и аккаунте) — только продукты, без вкладок; кнопка алмаза вверху открывает новое окно «Алмазы и монеты» (`modal 'gems'`: паки монет/алмазов, полная энергия, тестовые +50). Стили `.shop-tab*` удалены. Изменены `src/components/Modals.tsx`, `src/types/game.ts`, `src/App.tsx`, `src/screens/GameScreen.tsx`, `src/index.css`. Превью: оба окна открываются со своим содержимым; lint/tsc/build PASS. Коммит `fdefdbf`, push в `main`; деплой https://github.com/aStormspirit/chebutap/actions/runs/42457612229 — SUCCESS.
 
 ## Задача: баланс энергии и улучшений (2026-11-08)
 
