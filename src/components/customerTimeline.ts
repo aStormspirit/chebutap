@@ -234,8 +234,15 @@ const CHEF_ROLLS = 8; // alternating roll-away / roll-back frames
 const CHEF_FOLD = 0.8;
 const CHEF_AT_BOARD = CHEF_PRESS + CHEF_ROLLS * CHEF_ROLL_STEP + CHEF_FOLD;
 
-/** Length of one cooking run, from the order to the chef being back at his spot. */
+/** Default length of one cooking run, from the order to the chef being back at his spot. */
 export const CHEF_COOK_SECONDS = CHEF_WALK + CHEF_AT_BOARD + CHEF_WALK;
+/** Shortest time at the board when a dish is quicker than the walks allow. */
+const CHEF_MIN_AT_BOARD = 0.3;
+
+/** Seconds into a cooking run when the chef finishes at the board: the dish leaves his hands for the counter. */
+export function chefDishAt(cookSeconds = CHEF_COOK_SECONDS): number {
+  return CHEF_WALK + Math.max(CHEF_MIN_AT_BOARD, cookSeconds - 2 * CHEF_WALK);
+}
 
 /** Reaction to a new order: one «talking» frame (mouth open), then idle again. */
 const CHEF_TALK = 1.2;
@@ -250,9 +257,11 @@ const walkFrame = (u: number) => Math.floor(u / CHEF_STEP_FRAME) % 4;
 /**
  * `cookElapsed`: seconds since the dish was ordered, or null when nothing is being cooked.
  * `orderElapsed`: seconds since a customer placed an order (raised his hand), or null.
+ * `cookSeconds`: length of this dish's run; the time at the board (and its frames) scales to fit.
  */
-export function chefCellAt(cookElapsed: number | null, orderElapsed: number | null = null): ChefCell {
-  if (cookElapsed === null || cookElapsed < 0 || cookElapsed >= CHEF_COOK_SECONDS) {
+export function chefCellAt(cookElapsed: number | null, orderElapsed: number | null = null, cookSeconds = CHEF_COOK_SECONDS): ChefCell {
+  const atBoard = Math.max(CHEF_MIN_AT_BOARD, cookSeconds - 2 * CHEF_WALK);
+  if (cookElapsed === null || cookElapsed < 0 || cookElapsed >= 2 * CHEF_WALK + atBoard) {
     if (orderElapsed !== null && orderElapsed >= 0) {
       if (orderElapsed < CHEF_TALK) return { ...CHEF_IDLE, col: 1 };
     }
@@ -262,13 +271,14 @@ export function chefCellAt(cookElapsed: number | null, orderElapsed: number | nu
   // To the board (up and left): side walk mirrored to face left. TODO: back-view walk.
   if (u < CHEF_WALK) return { sheet: 'walk', row: 0, col: walkFrame(u), step: u / CHEF_WALK, flip: true };
   u -= CHEF_WALK;
-  if (u < CHEF_AT_BOARD) {
+  if (u < atBoard) {
+    u *= CHEF_AT_BOARD / atBoard;
     if (u < CHEF_PRESS) return { sheet: 'cook', row: 2, col: 0, step: 1 };
     const r = u - CHEF_PRESS;
     if (r < CHEF_ROLLS * CHEF_ROLL_STEP) return { sheet: 'cook', row: 2, col: 1 + (Math.floor(r / CHEF_ROLL_STEP) % 2), step: 1 };
     return { sheet: 'cook', row: 2, col: 3, step: 1 };
   }
-  u -= CHEF_AT_BOARD;
+  u -= atBoard;
   // Back to his spot (down and right): 3/4 front walk.
   return { sheet: 'walk', row: 1, col: walkFrame(u), step: 1 - Math.min(1, u / CHEF_WALK) };
 }

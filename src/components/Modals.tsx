@@ -1,4 +1,5 @@
-import { BOOSTS, SHOP_PACKS } from '../data/content';
+import { useState } from 'react';
+import { BOOSTS, INGREDIENTS, SHOP_PACKS } from '../data/content';
 import { formatNumber } from '../lib/format';
 import type { GameStore } from '../store/gameStore';
 import type { ModalId } from '../types/game';
@@ -11,8 +12,10 @@ type Props = {
 };
 
 export function Modals({ modal, store, onClose }: Props) {
+  /** Shop tab: products for cooking (default) or the coin/diamond/energy packs. */
+  const [shopTab, setShopTab] = useState<'products' | 'packs'>('products');
   if (!modal) return null;
-  const { state, activateBoost, buyShopPack, addHard, resetProgress } = store;
+  const { state, activateBoost, buyShopPack, buyIngredient, addHard, resetProgress } = store;
 
   return (
     <div className="modal-backdrop" onClick={onClose} role="presentation">
@@ -72,7 +75,55 @@ export function Modals({ modal, store, onClose }: Props) {
         {modal === 'shop' && (
           <>
             <h3 className="modal__title">Магазин</h3>
-            <p className="panel-sub">Монеты, алмазы и энергия</p>
+            <p className="panel-sub">
+              {shopTab === 'products' ? 'Покупайте продукты — из них повар готовит блюда' : 'Монеты, алмазы и энергия'}
+            </p>
+            <div className="shop-tabs" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={shopTab === 'products'}
+                className={`shop-tab${shopTab === 'products' ? ' shop-tab--active' : ''}`}
+                onClick={() => setShopTab('products')}
+              >
+                Продукты
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={shopTab === 'packs'}
+                className={`shop-tab${shopTab === 'packs' ? ' shop-tab--active' : ''}`}
+                onClick={() => setShopTab('packs')}
+              >
+                Монеты и алмазы
+              </button>
+            </div>
+            {shopTab === 'products' && (
+              <ul className="card-list">
+                {INGREDIENTS.map((ing) => (
+                  <li key={ing.id} className="game-card">
+                    <img className="shop-product__img" src={ing.icon} alt="" draggable={false} />
+                    <div className="game-card__main">
+                      <strong>
+                        {ing.name}
+                        {ing.pack > 1 && ` ×${ing.pack}`}
+                      </strong>
+                      <span className="game-card__meta">На складе: {state.pantry[ing.id] ?? 0}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn--wood"
+                      disabled={state.soft < ing.price}
+                      onClick={() => buyIngredient(ing.id)}
+                    >
+                      <CoinIcon className="btn__icon" />
+                      {ing.price}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {shopTab === 'packs' && (
             <ul className="card-list">
               {SHOP_PACKS.map((pack) => {
                 const can =
@@ -120,6 +171,7 @@ export function Modals({ modal, store, onClose }: Props) {
                 </button>
               </li>
             </ul>
+            )}
           </>
         )}
 

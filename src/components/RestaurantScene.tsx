@@ -14,6 +14,8 @@ import {
   visitFrameAt,
   type GuestKind,
 } from './customerTimeline';
+import { FOODS } from '../data/content';
+import type { CookingOrder } from '../store/kitchenStore';
 
 /** Scene size in the Figma frame «Ресторан — слои»; item boxes below are in these units. */
 const SCENE_W = 768;
@@ -72,10 +74,10 @@ const boxStyle = ({ x, y, w, h }: Box) => ({
 type Props = {
   /** Tap target: the chef button, rendered by the caller so tap logic stays in GameScreen. */
   renderChef: (style: ReturnType<typeof boxStyle>) => ReactNode;
-  /** `performance.now()` of the latest food order, or null; the chef cooks once per order. */
-  cookStartedAt: number | null;
-  /** Ready dishes standing on the serving counter. */
-  ready: number;
+  /** The dish being cooked, or null; the chef cooks once per order. */
+  cooking: CookingOrder | null;
+  /** Ready dishes (food ids) standing on the serving counter. */
+  ready: string[];
   /** Customer was served: take one dish off the counter. */
   onServe: () => void;
   /** Some seated customer starts waiting for an order / nobody waits any more. */
@@ -96,19 +98,19 @@ const CHAIRS = Array.from({ length: VISIT_COUNT }, (_, i) => i);
  * Restaurant background for the Earn screen: empty room, interior items, the door,
  * customers (boy or girl) who come in at random times, sit at the table and leave, and the chef who cooks.
  */
-export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe, onWaitingChange, guestsPerMinute }: Props) {
-  const cookRef = useRef(cookStartedAt);
+export function RestaurantScene({ renderChef, cooking, ready, onServe, onWaitingChange, guestsPerMinute }: Props) {
+  const cookRef = useRef(cooking);
   const waitingChangeRef = useRef(onWaitingChange);
   const rateRef = useRef(guestsPerMinute);
   useEffect(() => {
     waitingChangeRef.current = onWaitingChange;
     rateRef.current = guestsPerMinute;
   }, [onWaitingChange, guestsPerMinute]);
-  const readyRef = useRef(ready);
+  const readyRef = useRef(ready.length);
   useEffect(() => {
-    cookRef.current = cookStartedAt;
-    readyRef.current = ready;
-  }, [cookStartedAt, ready]);
+    cookRef.current = cooking;
+    readyRef.current = ready.length;
+  }, [cooking, ready]);
   /** One slot per chair; `servedU` is when the customer was served (seconds into the visit). */
   const slotsRef = useRef<Slot[]>(CHAIRS.map(() => ({ kind: 'boy', start: null, servedU: null, waiting: false })));
   /** Chef's last order reaction (`performance.now()`), any customer. */
@@ -190,9 +192,13 @@ export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe, onW
 
       const chef = sceneRef.current?.querySelector<HTMLElement>('.gs-chef__sprite');
       if (chef) {
-        const cookAt = cookRef.current;
+        const cook = cookRef.current;
         const orderAt = orderAtRef.current;
-        const c = chefCellAt(cookAt === null ? null : (now - cookAt) / 1000, orderAt === null ? null : (now - orderAt) / 1000);
+        const c = chefCellAt(
+          cook === null ? null : (now - cook.startedAt) / 1000,
+          orderAt === null ? null : (now - orderAt) / 1000,
+          cook?.seconds,
+        );
         chef.dataset.sheet = c.sheet;
         chef.style.backgroundPosition = `${(c.col * 100) / 3}% ${(c.row * 100) / 2}%`;
         chef.style.scale = c.flip ? '-1 1' : '';
@@ -247,16 +253,19 @@ export function RestaurantScene({ renderChef, cookStartedAt, ready, onServe, onW
           onPointerDown={() => handleGuestTap(i)}
         />
       ))}
-      {COUNTER_TRAYS.slice(0, ready).map(([x, y]) => (
-        <img
-          key={`${x}-${y}`}
-          className="gs-scene__dish"
-          src="/figma/food-cheburek.png"
-          style={boxStyle({ x: x - DISH.w / 2, y: y - DISH.h / 2, ...DISH })}
-          alt=""
-          draggable={false}
-        />
-      ))}
+      {ready.slice(0, COUNTER_TRAYS.length).map((foodId, i) => {
+        const [x, y] = COUNTER_TRAYS[i];
+        return (
+          <img
+            key={`${x}-${y}`}
+            className="gs-scene__dish"
+            src={FOODS.find((f) => f.id === foodId)?.icon ?? FOODS[0].icon}
+            style={boxStyle({ x: x - DISH.w / 2, y: y - DISH.h / 2, ...DISH })}
+            alt=""
+            draggable={false}
+          />
+        );
+      })}
       {/* Order bubbles, one per chair: what the seated customer wants, shown while the hand is up. */}
       {CHAIRS.map((i) => (
         <span

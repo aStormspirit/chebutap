@@ -1,5 +1,4 @@
-import { FOODS } from '../data/content';
-import { CHEF_COOK_SECONDS } from './customerTimeline';
+import { FOODS, INGREDIENTS, hasIngredients } from '../data/content';
 
 type Props = {
   cooking: boolean;
@@ -7,15 +6,17 @@ type Props = {
   full: boolean;
   /** Current energy; each dish costs `food.energy`. */
   energy: number;
+  /** Products in stock; each dish uses `food.ingredients`. */
+  pantry: Record<string, number>;
   onCook: (foodId: string) => void;
   onClose: () => void;
 };
 
 /**
- * «Еда» sheet above the bottom nav: list of dishes with a «Готовить» button.
+ * «Еда» sheet above the bottom nav: recipes with their products and a «Готовить» button.
  * Rendered inside `.gs-nav-wrap` so it sits right above the nav, which stays clickable.
  */
-export function FoodMenu({ cooking, full, energy, onCook, onClose }: Props) {
+export function FoodMenu({ cooking, full, energy, pantry, onCook, onClose }: Props) {
   return (
     <>
       <div className="food-backdrop" onClick={onClose} role="presentation" />
@@ -25,21 +26,40 @@ export function FoodMenu({ cooking, full, energy, onCook, onClose }: Props) {
             ×
           </button>
           <h3 className="modal__title">Еда</h3>
-          <p className="panel-sub">Выберите блюдо — повар приготовит его</p>
+          <p className="panel-sub">Блюда готовятся из продуктов со склада</p>
           <ul className="card-list">
             {FOODS.map((food) => {
               const noEnergy = energy < food.energy;
-              const label = cooking ? 'Готовится…' : full ? 'Нет места' : noEnergy ? 'Нет энергии' : 'Готовить';
+              const noProducts = !hasIngredients(pantry, food);
+              const label = cooking ? 'Готовится…' : full ? 'Нет места' : noProducts ? 'Нет продуктов' : noEnergy ? 'Нет энергии' : 'Готовить';
               return (
                 <li key={food.id} className="game-card">
                   <img className="food-card__img" src={food.icon} alt="" draggable={false} />
                   <div className="game-card__main">
                     <strong>{food.name}</strong>
+                    <span className="game-card__meta food-card__ing">
+                      {Object.entries(food.ingredients).map(([id, n], i) => {
+                        const ing = INGREDIENTS.find((x) => x.id === id);
+                        return (
+                          <span key={id} className={(pantry[id] ?? 0) < (n ?? 0) ? 'food-card__lack' : undefined}>
+                            {i > 0 && ' · '}
+                            <img src={ing?.icon} width={18} height={18} alt={ing?.name} title={ing?.name} /> {n}
+                          </span>
+                        );
+                      })}
+                    </span>
                     <span className="game-card__meta">
-                      <img src="/figma/game-bolt.svg" width={12} height={12} alt="" /> {food.energy} · {Math.round(CHEF_COOK_SECONDS)} с
+                      <img src="/figma/game-bolt.svg" width={12} height={12} alt="" /> {food.energy} · {food.cookSeconds} с ·{' '}
+                      <img src="/figma/game-coin.svg" width={12} height={12} alt="" /> {food.price}
                     </span>
                   </div>
-                  <button type="button" className="btn btn--wood" data-tutorial="cook" disabled={cooking || full || noEnergy} onClick={() => onCook(food.id)}>
+                  <button
+                    type="button"
+                    className="btn btn--wood"
+                    data-tutorial={food.id === FOODS[0].id ? 'cook' : undefined}
+                    disabled={cooking || full || noProducts || noEnergy}
+                    onClick={() => onCook(food.id)}
+                  >
                     {label}
                   </button>
                 </li>

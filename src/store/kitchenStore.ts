@@ -1,34 +1,46 @@
 import { useCallback, useEffect, useState } from 'react';
-import { CHEF_COOK_SECONDS, COUNTER_TRAYS } from '../components/customerTimeline';
+import { COUNTER_TRAYS, chefDishAt } from '../components/customerTimeline';
+import type { FoodDef } from '../data/content';
+
+/** The dish the chef is cooking: started at `performance.now()` = `startedAt`, lasts `seconds`. */
+export type CookingOrder = { foodId: string; startedAt: number; seconds: number };
 
 /**
  * Kitchen state that must survive tab switches: the dish being cooked and ready dishes
- * on the serving counter. Session only, not saved.
+ * on the serving counter (food ids, oldest first). Session only, not saved.
  */
 export function useKitchen() {
-  /** `performance.now()` of the current order, or null when the chef is idle. */
-  const [cookStartedAt, setCookStartedAt] = useState<number | null>(null);
-  const [ready, setReady] = useState(0);
+  const [cooking, setCooking] = useState<CookingOrder | null>(null);
+  const [ready, setReady] = useState<string[]>([]);
 
   useEffect(() => {
-    if (cookStartedAt === null) return;
-    const left = CHEF_COOK_SECONDS * 1000 - (performance.now() - cookStartedAt);
-    const id = window.setTimeout(() => {
-      setCookStartedAt(null);
-      setReady((n) => Math.min(COUNTER_TRAYS.length, n + 1));
-    }, Math.max(0, left));
-    return () => window.clearTimeout(id);
-  }, [cookStartedAt]);
+    if (cooking === null) return;
+    const elapsed = performance.now() - cooking.startedAt;
+    // The dish lands on the counter as soon as it leaves the chef's hands at the board;
+    // the order is over once he has walked back to his spot.
+    const dishId = window.setTimeout(() => {
+      setReady((list) => (list.length >= COUNTER_TRAYS.length ? list : [...list, cooking.foodId]));
+    }, Math.max(0, chefDishAt(cooking.seconds) * 1000 - elapsed));
+    const doneId = window.setTimeout(() => setCooking(null), Math.max(0, cooking.seconds * 1000 - elapsed));
+    return () => {
+      window.clearTimeout(dishId);
+      window.clearTimeout(doneId);
+    };
+  }, [cooking]);
 
-  const startCooking = useCallback(() => setCookStartedAt(performance.now()), []);
-  const serve = useCallback(() => setReady((n) => Math.max(0, n - 1)), []);
+  const startCooking = useCallback(
+    (food: FoodDef) => setCooking({ foodId: food.id, startedAt: performance.now(), seconds: food.cookSeconds }),
+    [],
+  );
+  /** Hand the oldest ready dish to a customer. */
+  const serve = useCallback(() => setReady((list) => list.slice(1)), []);
   /** Empty the counter and stop cooking (progress reset). */
   const reset = useCallback(() => {
-    setCookStartedAt(null);
-    setReady(0);
+    setCooking(null);
+    setReady([]);
   }, []);
 
-  return { cookStartedAt, ready, counterFull: ready >= COUNTER_TRAYS.length, startCooking, serve, reset };
+  return { cooking, ready, counterFull: ready.length >= COUNTER_TRAYS.length, startCooking, serve, reset };
 }
 
 export type Kitchen = ReturnType<typeof useKitchen>;

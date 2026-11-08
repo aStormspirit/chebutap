@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { BUILDINGS, STORAGE_KEY, TASKS, TUTORIAL_STORAGE_KEY, UPGRADES } from '../data/content';
+import { BUILDINGS, INGREDIENTS, STARTING_PANTRY, STORAGE_KEY, TASKS, TUTORIAL_STORAGE_KEY, UPGRADES, hasIngredients } from '../data/content';
+import type { FoodDef } from '../data/content';
 import { upgradeCost } from '../lib/format';
 import type { GameState } from '../types/game';
 
@@ -19,6 +20,7 @@ function createInitialState(): GameState {
     totalTaps: 0,
     totalEarned: 0,
     totalServed: 0,
+    pantry: { ...STARTING_PANTRY },
     upgradeLevels: { tap: 0, energy: 0, regen: 0 },
     buildingLevels: { stall: 0, bakery: 0, factory: 0, empire: 0 },
     completedTasks: [],
@@ -180,9 +182,24 @@ export function useGameStore() {
     return earned;
   }, []);
 
-  /** Spend energy on an action (e.g. cooking); the caller checks there is enough. */
-  const spendEnergy = useCallback((amount: number) => {
-    setState((prev) => ({ ...prev, energy: Math.max(0, prev.energy - amount) }));
+  /** Buy one pack of a product for coins. */
+  const buyIngredient = useCallback((id: string) => {
+    const def = INGREDIENTS.find((i) => i.id === id);
+    if (!def) return;
+    setState((prev) => {
+      if (prev.soft < def.price) return prev;
+      return { ...prev, soft: prev.soft - def.price, pantry: { ...prev.pantry, [id]: (prev.pantry[id] ?? 0) + def.pack } };
+    });
+  }, []);
+
+  /** Start a dish: takes its energy and products; the caller checks both are there (`canCook`). */
+  const cookDish = useCallback((food: FoodDef) => {
+    setState((prev) => {
+      if (prev.energy < food.energy || !hasIngredients(prev.pantry, food)) return prev;
+      const pantry = { ...prev.pantry };
+      for (const [id, n] of Object.entries(food.ingredients)) pantry[id] = (pantry[id] ?? 0) - (n ?? 0);
+      return { ...prev, energy: prev.energy - food.energy, pantry };
+    });
   }, []);
 
   /** A dish served to a customer: coins for the sale and progress on the serve tasks. */
@@ -325,7 +342,8 @@ export function useGameStore() {
     resetId,
     incomePerSec,
     tap,
-    spendEnergy,
+    buyIngredient,
+    cookDish,
     sellDish,
     buyUpgrade,
     buyBuilding,
