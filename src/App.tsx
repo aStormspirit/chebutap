@@ -81,7 +81,7 @@ export default function App() {
     <div className="app-shell app-shell--game">
       <div className="game-screen game-screen--panel">
         <div className="game-screen__bg" aria-hidden />
-        <main className="gs-panel">
+        <main className={`gs-panel${tab === 'town' ? ' gs-panel--town' : ''}`}>
           <button
             type="button"
             className="gs-square gs-panel__close"
@@ -97,7 +97,14 @@ export default function App() {
             </svg>
           </button>
           {tab === 'tasks' && <TasksScreen store={store} />}
-          {tab === 'town' && <TownScreen store={store} />}
+          {tab === 'town' && (
+            <TownScreen
+              onOpenCafe={() => {
+                setFoodOpen(false);
+                setTab('earn');
+              }}
+            />
+          )}
           {tab === 'upgrades' && <UpgradesScreen store={store} />}
           {tab === 'account' && (
             <AccountScreen

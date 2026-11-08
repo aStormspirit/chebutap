@@ -1566,3 +1566,239 @@ ul {
 .food-card__lack {
   color: #ffb4a0;
 }
+
+/* ===== Town: draggable city map (src/screens/TownScreen.tsx) ===== */
+.gs-panel--town {
+  padding: 0;
+  overflow: hidden;
+}
+
+.town {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #8fb06a;
+}
+
+.town__view {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.town__view:active {
+  cursor: grabbing;
+}
+
+.town__world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+
+.town__tile {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+.town__head {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: calc(var(--safe-top) + 14px) var(--gs-gutter) 22px;
+  background: linear-gradient(rgba(60, 35, 10, 0.35), rgba(60, 35, 10, 0));
+  pointer-events: none;
+}
+
+.town__place {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  transform: translate(-50%, -100%);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.town__place img {
+  display: block;
+  width: 100%;
+  pointer-events: none;
+}
+
+.town__place--locked img {
+  filter: grayscale(1) brightness(1.06) contrast(0.92);
+}
+
+.town__place.is-selected img {
+  filter: drop-shadow(0 0 3px #ffd45a) drop-shadow(0 0 3px #ffd45a);
+}
+
+.town__place--locked.is-selected img {
+  filter: grayscale(1) brightness(1.06) contrast(0.92) drop-shadow(0 0 3px #ffd45a) drop-shadow(0 0 3px #ffd45a);
+}
+
+.town__lock {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  pointer-events: none;
+}
+
+.town__lock i {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #6b4520;
+  border: 3px solid #f4c96a;
+  box-shadow: 0 3px 0 #3e260e;
+}
+
+.town__lock b,
+.town__tag {
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.town__lock b {
+  font-size: 11px;
+  color: #f4c96a;
+  background: #6b4520;
+  border: 2px solid #3e260e;
+  border-radius: 9px;
+  padding: 1px 8px;
+}
+
+.town__tag {
+  position: absolute;
+  left: 50%;
+  top: 2px;
+  transform: translate(-50%, -100%);
+  font-size: 13px;
+  color: #fff;
+  background: #3d9a3a;
+  border: 3px solid #fff;
+  border-radius: 14px;
+  padding: 3px 11px;
+  box-shadow: 0 2px 0 #2a6a28;
+  pointer-events: none;
+}
+
+/* Passers-by: boy/girl sheets (4 × 4), row 0 walks down-right, row 1 walks up-left. */
+.town__walker {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  animation: town-walk linear infinite;
+}
+
+.town__walker-sprite {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  left: -18px;
+  top: -33px;
+  background: url(/figma/restaurant/customer-boy.webp?v=3) 0 0 / 400% 400% no-repeat;
+  animation-name: town-legs, town-face;
+  animation-timing-function: steps(4), step-end;
+  animation-iteration-count: infinite;
+}
+
+.town__walker-sprite--girl {
+  background-image: url(/figma/restaurant/customer-girl.webp?v=5);
+}
+
+@keyframes town-walk {
+  0%,
+  100% {
+    left: var(--x1);
+    top: var(--y1);
+  }
+  50% {
+    left: var(--x2);
+    top: var(--y2);
+  }
+}
+
+@keyframes town-legs {
+  from {
+    background-position-x: 0%;
+  }
+  to {
+    background-position-x: 133.333%;
+  }
+}
+
+@keyframes town-face {
+  0% {
+    background-position-y: var(--row-go);
+    transform: scaleX(var(--flip-go));
+  }
+  50% {
+    background-position-y: var(--row-back);
+    transform: scaleX(var(--flip-back));
+  }
+}
+
+.town__card {
+  position: absolute;
+  left: var(--gs-gutter);
+  right: var(--gs-gutter);
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: #6b4520;
+  border: 3px solid #3e260e;
+  box-shadow: 0 4px 0 #3e260e;
+  color: #fff;
+  font-weight: 900;
+  text-shadow: var(--gs-label-shadow);
+}
+
+.town__card img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #b8743a;
+  border: 2px solid #3e260e;
+}
+
+.town__card img.is-locked {
+  filter: grayscale(1);
+}
+
+.town__card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.town__card-main strong {
+  font-size: 16px;
+}
+
+.town__card-main span {
+  font-size: 12px;
+  color: #f2dcb0;
+}

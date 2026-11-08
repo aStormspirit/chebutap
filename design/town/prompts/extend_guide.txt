@@ -1,0 +1,7 @@
+Image 1 is a piece of a bigger isometric cartoon town map; the solid flat magenta (#FF00FF) area is empty and must be filled.
+Fill the whole magenta area by continuing the town seamlessly: keep all existing (non-magenta) content exactly where it is, continue the streets, sidewalks, crosswalks, river, fences, trees and parks across the border at the same isometric angle, the same width and the same scale.
+Same style as Image 1 and Image 2: thin dark-brown outlines, flat soft cel shading, warm muted palette; houses in the new area are exactly the same size as the existing houses in Image 1.
+The street grid must line up: every street, sidewalk and fence that touches the magenta border continues straight into the new area without any break, shift or visible seam.
+The beige strips with light edges already drawn inside the magenta area are planned streets with sidewalks: draw real streets exactly along them (same width and angle) and connect them into the street grid. In the new area add more varied houses with gardens and fences, round trees, sometimes a small park. Do not repeat anything already shown in Image 1 (no second fountain square, no copy of the plaza). At most one small empty paved plaza the size of one house lot.
+No magenta may remain anywhere. No text, no letters, no people, no cars, no border, no vignette. The town runs off the outer edges — this is one piece of a much bigger map.
+Square 1:1 image, same framing as Image 1 (do not zoom, do not shift).

@@ -93,6 +93,12 @@ Earn — `GameScreen`; остальные — в прокручиваемом `m
 перестилены блоком в конце `index.css`; переменные `--gs-*` продублированы на `.modal-backdrop` (модалки вне `.game-screen`).
 `BottomNav.tsx` не используется.
 
+## Карта города (2026-11-08)
+
+- `TownScreen` — без состояния игры: данные в `src/data/town.ts` (размер карты, плитки, рестораны с координатами и `owned`, отрезки прогулок). Координаты — в пикселях исходной карты 3000², на экране × `TOWN_MAP_CSS / TOWN_MAP_SIZE`.
+- Фон — 9 плиток `public/figma/town/map-r-c.webp` (одна картинка 3000² тяжела для WebView). Перетаскивание — pointer events + `translate3d` без React-рендера на каждый кадр.
+- Покупка ресторанов в будущем: перенести `owned` в `GameState`, позиции оставить в `town.ts`.
+
 ## Доставка
 
 `npm run build` создаёт `dist/`. Nginx слушает 80, делает SPA fallback на `index.html`,

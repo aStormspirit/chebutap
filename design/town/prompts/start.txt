@@ -1,0 +1,5 @@
+Isometric cartoon town map tile for a cozy mobile cooking game, in exactly the style and scale of Image 2: same house size, same street width, same isometric angle, same thin dark-brown outlines, flat soft cel shading, and the warm muted palette of Image 1 (cream, beige, warm wood brown, terracotta, soft light-grey paving, muted sage-green grass, light-blue water).
+Residential streets with sidewalks and crosswalks on the isometric grid, many varied houses with gardens and wooden fences, round trees, bushes, flower beds, street lamps, a small park with a pond and benches.
+Include exactly one small empty paved plaza the size of one house lot, next to a street, near the center of the image (a restaurant will be placed there later).
+No big empty plots, no text, no letters, no people, no cars, no border, no vignette. The town runs off all four edges of the image — this is one piece of a much bigger map.
+Square 1:1 image.
