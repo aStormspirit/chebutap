@@ -6,8 +6,8 @@
 ## Последняя задача: нейросотрудник в Telegram (2026-11-13)
 
 - По просьбе пользователя бот вынесен в отдельный репозиторий https://github.com/aStormspirit/chebutap-bot (код, деплой, инструкция — там). В `chebutap` бота нет; `deploy.yml` без изменений.
-- Бот по упоминанию в Telegram: план → кнопка «Делать» → ветка `bot/<id>` в `chebutap` → build → `main` → ожидание `deploy.yml` → smoke → отчёт; при сбое — revert.
-- Осталось: создать бота в @BotFather, добавить секреты в `chebutap-bot` (включая `SERVER_*`, `DOCKERHUB_*`) и запустить его workflow. Живой запуск не проверен.
+- Бот на сервере только принимает задачи; работа идёт в облачных сессиях Claude Code (облачная задача с API-триггером): план → кнопка «Делать» → ветка `bot/<id>` → build → `main` → ожидание `deploy.yml` → отчёт; при сбое — revert.
+- Осталось: облачное окружение с `TELEGRAM_BOT_TOKEN`, облачная задача с промптом `ROUTINE_PROMPT.md` и API-триггером, секреты `ROUTINE_FIRE_URL`/`ROUTINE_TOKEN`/`BOT_ALLOWED_USER_IDS` в `chebutap-bot`, запуск workflow (README бота). Живой запуск не проверен.
 - Следующая точка входа: репозиторий `chebutap-bot`, `src/index.mjs`.
 
 ## Последняя задача: карта города (2026-11-08)

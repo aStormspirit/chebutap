@@ -176,4 +176,4 @@ worktree — `.worktrees/` (не версионируется). Правила �
 
 ## Нейросотрудник в Telegram (2026-11-13)
 
-- Отдельный сервис в репозитории `aStormspirit/chebutap-bot` (контейнер `chebutap-bot` на том же сервере). Работает с этим репозиторием как с целевым: ветки `bot/<id>`, push в `main` без force, ждёт `deploy.yml` по `head_sha`, при сбое — revert. Подробности — в README бота.
+- Отдельный сервис `aStormspirit/chebutap-bot`: бот на сервере только принимает сообщения и запускает облачную задачу Claude Code (API-триггер, подписка владельца). План, правки этого репозитория, build, push в `main` без force, ожидание `deploy.yml`, revert при сбое и отчёт в Telegram делает облачная сессия по `ROUTINE_PROMPT.md` бота.
