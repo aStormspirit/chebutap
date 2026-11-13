@@ -3,6 +3,17 @@
 Обновлено: 2026-11-05. База текущей задачи: `ff6ad10` на ветке `main`.
 Это снимок состояния, а не гарантия актуальности: при следующей задаче проверь Git повторно.
 
+## Последняя задача: нейросотрудник в Telegram (2026-11-13)
+
+- По просьбе пользователя: `bot/` — Telegram-бот без зависимостей (Node 22, long polling) + Claude Code CLI в Docker на сервере. По упоминанию: план → кнопка «Делать» (правило утверждения дизайна/логики) → ветка `bot/<id>` → lint/build → rebase на `main` и push без force → ожидание `deploy.yml` → smoke `APP_URL` → отчёт в чат; при падении — `git revert` в `main`. `#без_деплоя` — только ветка. Команды `/status`, `/cancel`, `/id`.
+- Деплой бота — `.github/workflows/bot.yml` (push в `main` по `bot/**` или вручную): образ `chebutap-bot`, `.env` пишется на сервере из GitHub Secrets. В `deploy.yml` добавлен `paths-ignore` для `bot/**`.
+- Изменены: новые `bot/{package.json,Dockerfile,docker-compose.yml,.env.example,.dockerignore,README.md}`, `bot/src/{index,config,telegram,shell,github}.mjs`, `.github/workflows/bot.yml`; `.github/workflows/deploy.yml`.
+- Проверки: `npm run check` (node --check) PASS; формат JSON-ответа `claude -p --output-format json` проверен локально. Живой запуск с Telegram и сервером не проверен — нет секретов.
+- Осталось: пользователю создать бота в @BotFather (privacy → Disable), добавить секреты `TELEGRAM_BOT_TOKEN`, `BOT_ALLOWED_USER_IDS`, `CLAUDE_CODE_OAUTH_TOKEN` или `ANTHROPIC_API_KEY`, `BOT_GITHUB_TOKEN` (опц. `BOT_ALLOWED_CHAT_IDS`, `APP_URL`) и запустить workflow (шаги — `bot/README.md`).
+- Известные проблемы: очередь и планы в памяти (теряются при перезапуске); макет-картинку бот не рисует; Claude и бот — один пользователь в контейнере, изоляция токенов не абсолютная.
+- Следующая точка входа: `bot/src/index.mjs` (`doPlan`, `doWork`).
+
+
 ## Последняя задача: карта города (2026-11-08)
 
 - По просьбе пользователя (утверждено, макет `design/town-map-mockup.jpg`; итог — `design/town-map-game.jpg`): вкладка «Город» — большая карта, двигается пальцем (pointer events, `translate3d`, ограничение краями); при открытии в центре кафе игрока. 6 ресторанов: Чебуречная (цветная, «Ваше кафе», кнопка «Открыть» → кафе), Пиццерия, Суши-бар, Пекарня, Бургерная, Кофейня — серые с замком «Скоро»; нажатие — подсветка и карточка внизу. Список зданий с пассивным доходом с вкладки убран (`BUILDINGS`/`buyBuilding` в коде остались).

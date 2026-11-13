@@ -1,0 +1,113 @@
+name: Bot → Docker Hub → Server
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'bot/**'
+      - '.github/workflows/bot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bot-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SSH_PORT: ${{ secrets.SERVER_SSH_PORT }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntax check
+        working-directory: bot
+        run: npm run check
+
+      - name: Set image metadata
+        run: |
+          echo "TAG=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+          echo "IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/chebutap-bot" >> "$GITHUB_ENV"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: bot
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ env.TAG }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=gha,scope=bot
+          cache-to: type=gha,mode=max,scope=bot
+
+      - name: Ensure deploy directory
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
+          script: mkdir -p "${{ secrets.SERVER_DEPLOY_PATH }}/bot"
+
+      - name: Copy compose to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
+          source: bot/docker-compose.yml
+          target: ${{ secrets.SERVER_DEPLOY_PATH }}
+          # bot/docker-compose.yml → <deploy>/bot/docker-compose.yml
+
+      - name: Write .env and restart
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          IMAGE_TAG: ${{ env.TAG }}
+          DEPLOY_PATH: ${{ secrets.SERVER_DEPLOY_PATH }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          BOT_ALLOWED_USER_IDS: ${{ secrets.BOT_ALLOWED_USER_IDS }}
+          BOT_ALLOWED_CHAT_IDS: ${{ secrets.BOT_ALLOWED_CHAT_IDS }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+          APP_URL: ${{ secrets.APP_URL }}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,IMAGE_TAG,DEPLOY_PATH,TELEGRAM_BOT_TOKEN,BOT_ALLOWED_USER_IDS,BOT_ALLOWED_CHAT_IDS,CLAUDE_CODE_OAUTH_TOKEN,ANTHROPIC_API_KEY,BOT_GITHUB_TOKEN,APP_URL
+          script: |
+            set -euo pipefail
+            cd "${DEPLOY_PATH}/bot"
+            umask 077
+            {
+              echo "TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}"
+              echo "BOT_ALLOWED_USER_IDS=${BOT_ALLOWED_USER_IDS}"
+              echo "BOT_ALLOWED_CHAT_IDS=${BOT_ALLOWED_CHAT_IDS}"
+              echo "CLAUDE_CODE_OAUTH_TOKEN=${CLAUDE_CODE_OAUTH_TOKEN}"
+              echo "ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}"
+              echo "BOT_GITHUB_TOKEN=${BOT_GITHUB_TOKEN}"
+              echo "GITHUB_REPO=${{ github.repository }}"
+              echo "APP_URL=${APP_URL}"
+            } > .env
+            echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+            export DOCKERHUB_USERNAME IMAGE_TAG
+            docker compose pull
+            docker compose up -d --remove-orphans
+            sleep 10
+            docker compose ps
+            test "$(docker inspect -f '{{.State.Running}}' chebutap-bot)" = true
+            docker compose logs --tail 20
