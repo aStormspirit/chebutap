@@ -155,12 +155,6 @@ export function Modals({ modal, store, onClose }: Props) {
               </li>
               <li className="game-card">
                 <div className="game-card__main">
-                  <strong>Вибрация</strong>
-                  <span className="game-card__meta">Отклик при тапе (Telegram Haptic)</span>
-                </div>
-              </li>
-              <li className="game-card">
-                <div className="game-card__main">
                   <strong>Сброс</strong>
                   <span className="game-card__meta">Удалить локальный сейв</span>
                 </div>
