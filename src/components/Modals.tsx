@@ -15,7 +15,7 @@ type Props = {
 export function Modals({ modal, store, onClose }: Props) {
   const musicOn = useSyncExternalStore(subscribeMusic, isMusicEnabled);
   if (!modal) return null;
-  const { state, activateBoost, buyShopPack, addHard, resetProgress } = store;
+  const { state, activateBoost, buyShopPack, resetProgress } = store;
 
   return (
     <div className="modal-backdrop" onClick={onClose} role="presentation">
@@ -131,15 +131,6 @@ export function Modals({ modal, store, onClose }: Props) {
                   </li>
                 );
               })}
-              <li className="game-card">
-                <div className="game-card__main">
-                  <strong>Тестовые алмазы</strong>
-                  <span className="game-card__meta">Для проверки магазина</span>
-                </div>
-                <button type="button" className="btn btn--green" onClick={() => addHard(50)}>
-                  +50
-                </button>
-              </li>
             </ul>
           </>
         )}

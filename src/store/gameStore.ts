@@ -311,10 +311,6 @@ export function useGameStore() {
     [],
   );
 
-  const addHard = useCallback((amount: number) => {
-    setState((prev) => ({ ...prev, hard: prev.hard + amount }));
-  }, []);
-
   const markInvite = useCallback(() => {
     setState((prev) => ({
       ...prev,
@@ -348,7 +344,6 @@ export function useGameStore() {
     claimTask,
     activateBoost,
     buyShopPack,
-    addHard,
     markInvite,
     resetProgress,
   };
