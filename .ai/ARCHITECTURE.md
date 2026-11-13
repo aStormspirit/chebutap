@@ -174,9 +174,6 @@ worktree — `.worktrees/` (не версионируется). Правила �
 - pg_cron (`notify-energy`, каждую минуту) → Edge Function `notify-energy` → `claim_energy_reminders` (атомарно, лимит 1 раз в 6 ч) → Bot API `sendMessage`. URL и секрет для cron — в Vault (`notify_energy_url`, `notify_energy_secret`).
 - Общая проверка Telegram initData — `supabase/functions/_shared/telegram.ts`.
 
-## Нейросотрудник в Telegram — `bot/` (2026-11-13)
+## Нейросотрудник в Telegram (2026-11-13)
 
-- Отдельный сервис, не часть игры: Node 22 без зависимостей, long polling Telegram, контейнер `chebutap-bot` (том `/home/node`: клон репо, node_modules, сессии Claude). Деплой — `.github/workflows/bot.yml`, секреты — GitHub Secrets → `.env` на сервере.
-- Задачи по одной в очереди; `claude -p --output-format json`: план с `--allowedTools` только на чтение, работа — `--resume` той же сессии с `--dangerously-skip-permissions` (контейнер от пользователя `node`).
-- Выкат: ветка `bot/<id>` → rebase на `main` → push без force → ждёт `deploy.yml` по `head_sha` → smoke → при сбое `git revert` диапазона в `main`.
-
+- Отдельный сервис в репозитории `aStormspirit/chebutap-bot` (контейнер `chebutap-bot` на том же сервере). Работает с этим репозиторием как с целевым: ветки `bot/<id>`, push в `main` без force, ждёт `deploy.yml` по `head_sha`, при сбое — revert. Подробности — в README бота.

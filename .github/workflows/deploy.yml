@@ -3,9 +3,6 @@ name: Build → Docker Hub → Server
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'bot/**'
-      - '.github/workflows/bot.yml'
   workflow_dispatch:
 
 permissions:

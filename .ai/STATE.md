@@ -5,14 +5,10 @@
 
 ## Последняя задача: нейросотрудник в Telegram (2026-11-13)
 
-- По просьбе пользователя: `bot/` — Telegram-бот без зависимостей (Node 22, long polling) + Claude Code CLI в Docker на сервере. По упоминанию: план → кнопка «Делать» (правило утверждения дизайна/логики) → ветка `bot/<id>` → lint/build → rebase на `main` и push без force → ожидание `deploy.yml` → smoke `APP_URL` → отчёт в чат; при падении — `git revert` в `main`. `#без_деплоя` — только ветка. Команды `/status`, `/cancel`, `/id`.
-- Деплой бота — `.github/workflows/bot.yml` (push в `main` по `bot/**` или вручную): образ `chebutap-bot`, `.env` пишется на сервере из GitHub Secrets. В `deploy.yml` добавлен `paths-ignore` для `bot/**`.
-- Изменены: новые `bot/{package.json,Dockerfile,docker-compose.yml,.env.example,.dockerignore,README.md}`, `bot/src/{index,config,telegram,shell,github}.mjs`, `.github/workflows/bot.yml`; `.github/workflows/deploy.yml`.
-- Проверки: `npm run check` (node --check) PASS; формат JSON-ответа `claude -p --output-format json` проверен локально. Живой запуск с Telegram и сервером не проверен — нет секретов.
-- Осталось: пользователю создать бота в @BotFather (privacy → Disable), добавить секреты `TELEGRAM_BOT_TOKEN`, `BOT_ALLOWED_USER_IDS`, `CLAUDE_CODE_OAUTH_TOKEN` или `ANTHROPIC_API_KEY`, `BOT_GITHUB_TOKEN` (опц. `BOT_ALLOWED_CHAT_IDS`, `APP_URL`) и запустить workflow (шаги — `bot/README.md`).
-- Известные проблемы: очередь и планы в памяти (теряются при перезапуске); макет-картинку бот не рисует; Claude и бот — один пользователь в контейнере, изоляция токенов не абсолютная.
-- Следующая точка входа: `bot/src/index.mjs` (`doPlan`, `doWork`).
-
+- По просьбе пользователя бот вынесен в отдельный репозиторий https://github.com/aStormspirit/chebutap-bot (код, деплой, инструкция — там). В `chebutap` бота нет; `deploy.yml` без изменений.
+- Бот по упоминанию в Telegram: план → кнопка «Делать» → ветка `bot/<id>` в `chebutap` → build → `main` → ожидание `deploy.yml` → smoke → отчёт; при сбое — revert.
+- Осталось: создать бота в @BotFather, добавить секреты в `chebutap-bot` (включая `SERVER_*`, `DOCKERHUB_*`) и запустить его workflow. Живой запуск не проверен.
+- Следующая точка входа: репозиторий `chebutap-bot`, `src/index.mjs`.
 
 ## Последняя задача: карта города (2026-11-08)
 
